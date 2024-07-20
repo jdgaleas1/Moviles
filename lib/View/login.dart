@@ -16,7 +16,7 @@ class _LoginPageState extends State<LoginPage> {
   void _login() {
     // Usuario y contraseña estáticos
     const String staticEmail = 'admin';
-    const String staticPassword = 'password';
+    const String staticPassword = '1234';
 
     if (_emailController.text == staticEmail && _passwordController.text == staticPassword) {
       Navigator.pushReplacement(
