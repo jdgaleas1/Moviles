@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
 
 class LoginPage extends StatefulWidget {
@@ -12,11 +13,12 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
   bool _obscureText = true;
+  final LocalAuthentication auth = LocalAuthentication();
 
   void _login() {
     // Usuario y contraseña estáticos
     const String staticEmail = 'admin';
-    const String staticPassword = '1234';
+    const String staticPassword = 'password';
 
     if (_emailController.text == staticEmail && _passwordController.text == staticPassword) {
       Navigator.pushReplacement(
@@ -27,6 +29,28 @@ class _LoginPageState extends State<LoginPage> {
       // Muestra un mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Usuario o contraseña incorrectos')),
+      );
+    }
+  }
+
+  Future<void> _authenticate() async {
+    try {
+      final bool didAuthenticate = await auth.authenticate(
+        localizedReason: 'Por favor autentícate para acceder',
+        options: const AuthenticationOptions(
+          biometricOnly: true,
+        ),
+      );
+
+      if (didAuthenticate) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error de autenticación: $e')),
       );
     }
   }
@@ -137,6 +161,19 @@ class _LoginPageState extends State<LoginPage> {
                           ),
                         ),
                       ],
+                    ),
+                    const SizedBox(height: 20),
+                    ElevatedButton.icon(
+                      onPressed: _authenticate,
+                      icon: Icon(Icons.fingerprint),
+                      label: Text('Huella'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blueAccent,
+                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(30.0),
+                        ),
+                      ),
                     ),
                   ],
                 ),
