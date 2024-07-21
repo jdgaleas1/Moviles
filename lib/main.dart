@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:autos/View/Home.dart';
-import 'package:autos/View/login.dart';
+import 'package:autos/View/Alquilador_crud.dart';
+import 'package:autos/View/Alquilador_ver.dart';
 import 'package:autos/View/tes.dart';
+import 'package:autos/View/home.dart';
+import 'package:autos/View/login.dart';
 
 void main() {
   runApp(const MyApp());
@@ -36,17 +38,51 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static List<Widget> _content2 = [
-    Home(),
-    name()
-  ];
-
+  late List<Widget> _content;
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeContent();
+  }
+
+  void _initializeContent() {
+    if (esCliente) {
+      _content = [
+        Home(),
+        name(),
+      ];
+    } else if (esProveedor) {
+      _content = [
+        AlquiladorVer(),
+        alquiladorCrud(),
+      ];
+    } else {
+      // Proporciona una vista predeterminada en caso de error
+      _content = [
+        Center(child: Text('cliente: ${esCliente.toString()} proveedor: ${esProveedor.toString()}')),
+      ];
+    }
+    _selectedIndex = 0;
+  }
+
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index < _content.length) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _cerrarSesion(BuildContext context) {
+    esCliente = false;
+    esProveedor = false;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -57,7 +93,7 @@ class _MyHomePageState extends State<MyHomePage> {
         title: Text(widget.title),
       ),
       body: Center(
-        child: _content2[_selectedIndex],
+        child: _content[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -81,21 +117,19 @@ class _MyHomePageState extends State<MyHomePage> {
             DrawerHeader(
               decoration: BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/car_drawer.jpg'), 
+                  image: AssetImage('assets/images/car_drawer.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
-              child: Container(), // Proporcionamos un Container vacío como child
+              child: Container(),
             ),
             ListTile(
               leading: Icon(Icons.home),
               title: Text('Home'),
               onTap: () {
-                setState(() {
-                  _selectedIndex = 0;
-                });
+                _onItemTapped(0);
                 Navigator.pop(context);
               },
             ),
@@ -103,9 +137,7 @@ class _MyHomePageState extends State<MyHomePage> {
               leading: Icon(Icons.smartphone_sharp),
               title: Text('Horizontal'),
               onTap: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
+                _onItemTapped(1);
                 Navigator.pop(context);
               },
             ),
@@ -113,13 +145,7 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                    (Route<dynamic> route) => false,
-                  );
-                },
+                onPressed: () => _cerrarSesion(context),
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Color.fromARGB(255, 242, 117, 8),
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),

@@ -2,25 +2,49 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
 
+bool esCliente = false;
+bool esProveedor = false;
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-
+  
   @override
   _LoginPageState createState() => _LoginPageState();
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _emailController = TextEditingController();
-  final TextEditingController _passwordController = TextEditingController();
+  final TextEditingController _usuarioController = TextEditingController();
+  final TextEditingController _contrasenaController = TextEditingController();
   bool _obscureText = true;
   final LocalAuthentication auth = LocalAuthentication();
 
   void _login() {
-    // Usuario y contraseña estáticos
-    const String staticEmail = 'admin';
-    const String staticPassword = 'password';
+    // Inicializa los booleanos a false
+    esCliente = false;
+    esProveedor = false;
 
-    if (_emailController.text == staticEmail && _passwordController.text == staticPassword) {
+    // Datos estáticos para el ejemplo
+    const String clienteEmail = 'cliente';
+    const String clientePassword = 'cliente123';
+    const String proveedorEmail = 'proveedor';
+    const String proveedorPassword = 'proveedor123';
+
+    if (_usuarioController.text == clienteEmail && _contrasenaController.text == clientePassword) {
+      setState(() {
+        esCliente = true;
+        esProveedor = false;
+      });
+      print('Cliente logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
+      Navigator.pushReplacement(
+        context,
+        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+      );
+    } else if (_usuarioController.text == proveedorEmail && _contrasenaController.text == proveedorPassword) {
+      setState(() {
+        esProveedor = true;
+        esCliente = false;
+      });
+      print('Proveedor logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
@@ -73,7 +97,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Column(
                   children: <Widget>[
                     TextField(
-                      controller: _emailController,
+                      controller: _usuarioController,
                       decoration: InputDecoration(
                         labelText: 'Email',
                         prefixIcon: Icon(Icons.email, color: Colors.black),
@@ -86,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                     const SizedBox(height: 20),
                     TextField(
-                      controller: _passwordController,
+                      controller: _contrasenaController,
                       decoration: InputDecoration(
                         labelText: 'Password',
                         prefixIcon: Icon(Icons.lock, color: Colors.black),
