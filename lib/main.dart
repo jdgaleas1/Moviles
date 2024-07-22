@@ -19,7 +19,7 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 242, 117, 8)),
         useMaterial3: true,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           selectedItemColor: Color.fromARGB(255, 7, 255, 44),
           unselectedItemColor: Colors.grey,
         ),
@@ -50,13 +50,13 @@ class _MyHomePageState extends State<MyHomePage> {
   void _initializeContent() {
     if (esCliente) {
       _content = [
-        ClienteHome(),
-        ClienteReservas(),
+        const ClienteHome(),
+        const ClienteReservas(),
       ];
     } else if (esProveedor) {
       _content = [
-        AlquiladorVer(),
-        alquiladorCrud(),
+        const AlquiladorVer(),
+        const alquiladorCrud(),
       ];
     } else {
       // Proporciona una vista predeterminada en caso de error
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text("Alquiler"),
+        title: const Text("Alquiler"),
       ),
       body: Center(
         child: _content[_selectedIndex],
@@ -125,17 +125,64 @@ class _MyHomePageState extends State<MyHomePage> {
               padding: EdgeInsets.zero,
               child: Container(),
             ),
+            const SizedBox(height: 16),
+            const Column(
+              children: [
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/avatar.png'), // Cambia esto por la ruta de tu imagen de avatar
+                  radius: 40,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Usuario123',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'usuario123@espe.edu',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0), // Espaciado a los lados
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Tipo de usuario: ',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        '------------',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
               onTap: () {
                 _onItemTapped(0);
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: Icon(Icons.car_rental_outlined),
-              title: Text('Reservas Hechas'),
+              leading: const Icon(Icons.car_rental_outlined),
+              title: const Text('Reservas Hechas'),
               onTap: () {
                 _onItemTapped(1);
                 Navigator.pop(context);
@@ -147,7 +194,7 @@ class _MyHomePageState extends State<MyHomePage> {
               child: ElevatedButton(
                 onPressed: () => _cerrarSesion(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 242, 117, 8),
+                  backgroundColor: const Color.fromARGB(255, 242, 117, 8),
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),

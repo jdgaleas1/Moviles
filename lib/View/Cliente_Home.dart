@@ -60,14 +60,14 @@ class RecomendadoTab extends StatelessWidget {
           child: ListTile(
             leading: Image.asset('assets/images/car.png'), // Reemplaza con la imagen correcta
             title: Text('Nombre del carro $index'),
-            subtitle: Column(
+            subtitle: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('En terminal . UIO'),
                 Text('Política de combust.'),
               ],
             ),
-            trailing: Column(
+            trailing: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('\$45'), // Reemplaza con el precio correcto
@@ -94,14 +94,14 @@ class CercanosTab extends StatelessWidget {
           child: ListTile(
             leading: Image.asset('assets/images/car.png'), // Reemplaza con la imagen correcta
             title: Text('Carro cercano $index'),
-            subtitle: Column(
+            subtitle: const Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text('Ubicación cercana'),
                 Text('Otra información'),
               ],
             ),
-            trailing: Column(
+            trailing: const Column(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
                 Text('\$42'), // Reemplaza con el precio correcto
@@ -125,8 +125,8 @@ class BuscarTab extends StatelessWidget {
           TextField(
             decoration: InputDecoration(
               labelText: 'Buscar',
-              prefixIcon: Icon(Icons.search, color: Colors.black),
-              suffixIcon: Icon(Icons.filter_list, color: Colors.black), // Icono de filtro
+              prefixIcon: const Icon(Icons.search, color: Colors.black),
+              suffixIcon: const Icon(Icons.filter_list, color: Colors.black), // Icono de filtro
               filled: true,
               fillColor: Colors.white.withOpacity(0.8),
               border: OutlineInputBorder(
