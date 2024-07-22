@@ -1,7 +1,9 @@
+import 'package:autos/View/Cliente_Home.dart';
 import 'package:flutter/material.dart';
-import 'package:autos/View/Home.dart';
+import 'package:autos/View/Alquilador_crud.dart';
+import 'package:autos/View/Alquilador_ver.dart';
+import 'package:autos/View/Cliente_reservas.dart';
 import 'package:autos/View/login.dart';
-import 'package:autos/View/tes.dart';
 
 void main() {
   runApp(const MyApp());
@@ -15,9 +17,9 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Alquiler',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 242, 117, 8)),
         useMaterial3: true,
-        bottomNavigationBarTheme: BottomNavigationBarThemeData(
+        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           selectedItemColor: Color.fromARGB(255, 7, 255, 44),
           unselectedItemColor: Colors.grey,
         ),
@@ -36,17 +38,51 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  static List<Widget> _content2 = [
-    Home(),
-    name()
-  ];
-
+  late List<Widget> _content;
   int _selectedIndex = 0;
 
+  @override
+  void initState() {
+    super.initState();
+    _initializeContent();
+  }
+
+  void _initializeContent() {
+    if (esCliente) {
+      _content = [
+        const ClienteHome(),
+        const ClienteReservas(),
+      ];
+    } else if (esProveedor) {
+      _content = [
+        const AlquiladorVer(),
+        const alquiladorCrud(),
+      ];
+    } else {
+      // Proporciona una vista predeterminada en caso de error
+      _content = [
+        Center(child: Text('cliente: ${esCliente.toString()} proveedor: ${esProveedor.toString()}')),
+      ];
+    }
+    _selectedIndex = 0;
+  }
+
   void _onItemTapped(int index) {
-    setState(() {
-      _selectedIndex = index;
-    });
+    if (index < _content.length) {
+      setState(() {
+        _selectedIndex = index;
+      });
+    }
+  }
+
+  void _cerrarSesion(BuildContext context) {
+    esCliente = false;
+    esProveedor = false;
+    Navigator.pushAndRemoveUntil(
+      context,
+      MaterialPageRoute(builder: (context) => const LoginPage()),
+      (Route<dynamic> route) => false,
+    );
   }
 
   @override
@@ -54,10 +90,10 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text("Alquiler"),
       ),
       body: Center(
-        child: _content2[_selectedIndex],
+        child: _content[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
         items: const <BottomNavigationBarItem>[
@@ -66,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Horizontal',
+            icon: Icon(Icons.car_rental_outlined),
+            label: 'Reservas Hechas',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -79,33 +115,76 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
-                  image: AssetImage('assets/images/car_drawer.jpg'), 
+                  image: AssetImage('assets/images/car_drawer.jpg'),
                   fit: BoxFit.cover,
                 ),
               ),
               margin: EdgeInsets.zero,
               padding: EdgeInsets.zero,
-              child: Container(), // Proporcionamos un Container vacío como child
+              child: Container(),
+            ),
+            const SizedBox(height: 16),
+            const Column(
+              children: [
+                CircleAvatar(
+                  backgroundImage: AssetImage('assets/images/avatar.png'), // Cambia esto por la ruta de tu imagen de avatar
+                  radius: 40,
+                ),
+                SizedBox(height: 10),
+                Text(
+                  'Usuario123',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 18,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+                Text(
+                  'usuario123@espe.edu',
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontSize: 14,
+                  ),
+                ),
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0), // Espaciado a los lados
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Tipo de usuario: ',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                      Text(
+                        '------------',
+                        style: TextStyle(
+                          color: Colors.black,
+                          fontSize: 12,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
             ),
             ListTile(
-              leading: Icon(Icons.home),
-              title: Text('Home'),
+              leading: const Icon(Icons.home),
+              title: const Text('Home'),
               onTap: () {
-                setState(() {
-                  _selectedIndex = 0;
-                });
+                _onItemTapped(0);
                 Navigator.pop(context);
               },
             ),
             ListTile(
-              leading: Icon(Icons.smartphone_sharp),
-              title: Text('Horizontal'),
+              leading: const Icon(Icons.car_rental_outlined),
+              title: const Text('Reservas Hechas'),
               onTap: () {
-                setState(() {
-                  _selectedIndex = 1;
-                });
+                _onItemTapped(1);
                 Navigator.pop(context);
               },
             ),
@@ -113,15 +192,9 @@ class _MyHomePageState extends State<MyHomePage> {
             Padding(
               padding: const EdgeInsets.all(16.0),
               child: ElevatedButton(
-                onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => const LoginPage()),
-                    (Route<dynamic> route) => false,
-                  );
-                },
+                onPressed: () => _cerrarSesion(context),
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 242, 117, 8),
+                  backgroundColor: const Color.fromARGB(255, 242, 117, 8),
                   padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(30.0),
