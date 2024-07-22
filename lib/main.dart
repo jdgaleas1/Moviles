@@ -1,8 +1,8 @@
+import 'package:autos/View/Cliente_Home.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/View/Alquilador_crud.dart';
 import 'package:autos/View/Alquilador_ver.dart';
-import 'package:autos/View/tes.dart';
-import 'package:autos/View/home.dart';
+import 'package:autos/View/Cliente_reservas.dart';
 import 'package:autos/View/login.dart';
 
 void main() {
@@ -17,7 +17,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Alquiler',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 242, 117, 8)),
         useMaterial3: true,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           selectedItemColor: Color.fromARGB(255, 7, 255, 44),
@@ -50,8 +50,8 @@ class _MyHomePageState extends State<MyHomePage> {
   void _initializeContent() {
     if (esCliente) {
       _content = [
-        Home(),
-        name(),
+        ClienteHome(),
+        ClienteReservas(),
       ];
     } else if (esProveedor) {
       _content = [
@@ -90,7 +90,7 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: Text("Alquiler"),
       ),
       body: Center(
         child: _content[_selectedIndex],
@@ -102,8 +102,8 @@ class _MyHomePageState extends State<MyHomePage> {
             label: 'Home',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.business),
-            label: 'Horizontal',
+            icon: Icon(Icons.car_rental_outlined),
+            label: 'Reservas Hechas',
           ),
         ],
         currentIndex: _selectedIndex,
@@ -115,7 +115,7 @@ class _MyHomePageState extends State<MyHomePage> {
         child: Column(
           children: <Widget>[
             DrawerHeader(
-              decoration: BoxDecoration(
+              decoration: const BoxDecoration(
                 image: DecorationImage(
                   image: AssetImage('assets/images/car_drawer.jpg'),
                   fit: BoxFit.cover,
@@ -134,8 +134,8 @@ class _MyHomePageState extends State<MyHomePage> {
               },
             ),
             ListTile(
-              leading: Icon(Icons.smartphone_sharp),
-              title: Text('Horizontal'),
+              leading: Icon(Icons.car_rental_outlined),
+              title: Text('Reservas Hechas'),
               onTap: () {
                 _onItemTapped(1);
                 Navigator.pop(context);
