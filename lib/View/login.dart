@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
+import 'package:autos/View/create_account.dart';
 
 bool esCliente = false;
 bool esProveedor = false;
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
-  
+
   @override
   _LoginPageState createState() => _LoginPageState();
 }
@@ -29,25 +30,31 @@ class _LoginPageState extends State<LoginPage> {
     const String proveedorEmail = 'proveedor';
     const String proveedorPassword = 'proveedor123';
 
-    if (_usuarioController.text == clienteEmail && _contrasenaController.text == clientePassword) {
+    if (_usuarioController.text == clienteEmail &&
+        _contrasenaController.text == clientePassword) {
       setState(() {
         esCliente = true;
         esProveedor = false;
       });
-      print('Cliente logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
+      print(
+          'Cliente logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+        MaterialPageRoute(
+            builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
       );
-    } else if (_usuarioController.text == proveedorEmail && _contrasenaController.text == proveedorPassword) {
+    } else if (_usuarioController.text == proveedorEmail &&
+        _contrasenaController.text == proveedorPassword) {
       setState(() {
         esProveedor = true;
         esCliente = false;
       });
-      print('Proveedor logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
+      print(
+          'Proveedor logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
       Navigator.pushReplacement(
         context,
-        MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+        MaterialPageRoute(
+            builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
       );
     } else {
       // Muestra un mensaje de error
@@ -69,7 +76,8 @@ class _LoginPageState extends State<LoginPage> {
       if (didAuthenticate) {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+          MaterialPageRoute(
+              builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
         );
       }
     } catch (e) {
@@ -116,7 +124,9 @@ class _LoginPageState extends State<LoginPage> {
                         prefixIcon: Icon(Icons.lock, color: Colors.black),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText ? Icons.visibility : Icons.visibility_off,
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Colors.black,
                           ),
                           onPressed: () {
@@ -140,7 +150,8 @@ class _LoginPageState extends State<LoginPage> {
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
@@ -158,7 +169,8 @@ class _LoginPageState extends State<LoginPage> {
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 39, 218, 147),
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
@@ -170,11 +182,17 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                         ElevatedButton(
                           onPressed: () {
-                            // Implementa la funcionalidad de crear una cuenta aquí
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const CreateAccountPage()),
+                            );
                           },
                           style: ElevatedButton.styleFrom(
                             backgroundColor: Color.fromARGB(255, 39, 218, 147),
-                            padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
+                            padding: const EdgeInsets.symmetric(
+                                horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
@@ -193,7 +211,8 @@ class _LoginPageState extends State<LoginPage> {
                       label: Text('Huella'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 50, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
