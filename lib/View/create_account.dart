@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
-import 'package:autos/main.dart';
 
 class CreateAccountPage extends StatefulWidget {
   const CreateAccountPage({super.key});
