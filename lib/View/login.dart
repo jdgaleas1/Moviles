@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
+import 'RecuperarContra.dart';
 
 bool esCliente = false;
 bool esProveedor = false;
@@ -24,8 +25,8 @@ class _LoginPageState extends State<LoginPage> {
     esProveedor = false;
 
     // Datos estáticos para el ejemplo
-    const String clienteEmail = 'cliente';
-    const String clientePassword = 'cliente123';
+    const String clienteEmail = 'johandesvos@gmail.com';
+    const String clientePassword = '123';
     const String proveedorEmail = 'proveedor';
     const String proveedorPassword = 'proveedor123';
 
@@ -100,7 +101,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _usuarioController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: Icon(Icons.email, color: Colors.black),
+                        prefixIcon: const Icon(Icons.email, color: Colors.black),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.8),
                         border: OutlineInputBorder(
@@ -113,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _contrasenaController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock, color: Colors.black),
+                        prefixIcon: const Icon(Icons.lock, color: Colors.black),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureText ? Icons.visibility : Icons.visibility_off,
@@ -136,7 +137,10 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // Implementa la funcionalidad de olvidé mi contraseña aquí
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(builder: (context) => const RecuperarContra()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
@@ -157,7 +161,7 @@ class _LoginPageState extends State<LoginPage> {
                         ElevatedButton(
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 39, 218, 147),
+                            backgroundColor: const Color.fromARGB(255, 39, 218, 147),
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
@@ -173,7 +177,7 @@ class _LoginPageState extends State<LoginPage> {
                             // Implementa la funcionalidad de crear una cuenta aquí
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 39, 218, 147),
+                            backgroundColor: const Color.fromARGB(255, 39, 218, 147),
                             padding: const EdgeInsets.symmetric(horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
@@ -189,8 +193,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _authenticate,
-                      icon: Icon(Icons.fingerprint),
-                      label: Text('Huella'),
+                      icon: const Icon(Icons.fingerprint),
+                      label: const Text('Huella'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
                         padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
@@ -209,3 +213,4 @@ class _LoginPageState extends State<LoginPage> {
     );
   }
 }
+ 
