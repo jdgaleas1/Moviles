@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class RecuperarContra extends StatefulWidget {
-  const RecuperarContra({super.key});
+class RecuperarContrasena extends StatefulWidget {
+  const RecuperarContrasena({super.key});
 
   @override
-  State<RecuperarContra> createState() => _RecuperarContraState();
+  State<RecuperarContrasena> createState() => _RecuperarContrasenaState();
 }
 
-class _RecuperarContraState extends State<RecuperarContra> with SingleTickerProviderStateMixin {
+class _RecuperarContrasenaState extends State<RecuperarContrasena> with SingleTickerProviderStateMixin {
   late TabController _tabController;
 
   @override

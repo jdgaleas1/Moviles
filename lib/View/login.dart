@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
 import 'package:autos/View/create_account.dart';
+import 'package:autos/View/RecuperarContra.dart';
 
 bool esCliente = false;
 bool esProveedor = false;
@@ -10,6 +11,7 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
+  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -108,7 +110,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _usuarioController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: Icon(Icons.email, color: Colors.black),
+                        prefixIcon: const Icon(Icons.email, color: Colors.black),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.8),
                         border: OutlineInputBorder(
@@ -121,7 +123,7 @@ class _LoginPageState extends State<LoginPage> {
                       controller: _contrasenaController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: Icon(Icons.lock, color: Colors.black),
+                        prefixIcon: const Icon(Icons.lock, color: Colors.black),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureText
@@ -146,7 +148,11 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
-                        // Implementa la funcionalidad de olvidé mi contraseña aquí
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const RecuperarContrasena()),
+                        );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
@@ -168,7 +174,7 @@ class _LoginPageState extends State<LoginPage> {
                         ElevatedButton(
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 39, 218, 147),
+                            backgroundColor: const Color.fromARGB(255, 39, 218, 147),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
@@ -190,7 +196,7 @@ class _LoginPageState extends State<LoginPage> {
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Color.fromARGB(255, 39, 218, 147),
+                            backgroundColor: const Color.fromARGB(255, 39, 218, 147),
                             padding: const EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
@@ -207,8 +213,8 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _authenticate,
-                      icon: Icon(Icons.fingerprint),
-                      label: Text('Huella'),
+                      icon: const Icon(Icons.fingerprint),
+                      label: const Text('Huella'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
                         padding: const EdgeInsets.symmetric(
