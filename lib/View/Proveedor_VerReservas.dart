@@ -20,7 +20,7 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
           return Card(
             margin: const EdgeInsets.all(10),
             child: ListTile(
-              leading: CircleAvatar(
+              leading: const CircleAvatar(
                 backgroundImage: AssetImage('assets/images/car_login.jpg'), // Imagen de ejemplo
               ),
               title: Text('Usuario $index'), // Información de ejemplo

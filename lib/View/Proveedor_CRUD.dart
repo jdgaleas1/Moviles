@@ -1,35 +1,34 @@
 import 'package:flutter/material.dart';
 
-class VerProveedor extends StatefulWidget {
-  const VerProveedor({super.key});
+class Proveedor extends StatefulWidget {
+  const Proveedor({super.key});
 
   @override
-  State<VerProveedor> createState() => _VerProveedorState();
+  State<Proveedor> createState() => _ProveedorState();
 }
 
-class _VerProveedorState extends State<VerProveedor> {
+class _ProveedorState extends State<Proveedor> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Gestión de Proveedores'),
+        title: const Text('CRUD Autos'),
       ),
       body: ListView.builder(
-        itemCount: 5, // Número de proveedores en la lista
+        itemCount: 5,  // Número de autos en la lista
         itemBuilder: (context, index) {
           return Card(
             margin: const EdgeInsets.all(10),
             child: ListTile(
-              leading: CircleAvatar(
-                backgroundImage: AssetImage('assets/provider_placeholder.png'), // Imagen de ejemplo
-              ),
-              title: Text('Proveedor $index'), // Información de ejemplo
+              leading: Image.asset('assets/images/car_login.jpg', width: 100, height: 150, fit: BoxFit.cover), 
+              title: Text('Marca del Auto $index (Año)'), 
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Descripción del proveedor $index'),
-                  Text('Contacto: contacto$index@empresa.com'),
-                  Text('Teléfono: +123456789'),
+                  Text('Empresa'),
+                  Text('Descripción del auto $index'),
+                  Text('Características de la empresa $index'),
+                  Text('Precio: \$XX'),
                 ],
               ),
               trailing: Row(
@@ -55,7 +54,7 @@ class _VerProveedorState extends State<VerProveedor> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Acción de agregar nuevo proveedor
+          // Acción de agregar nuevo auto
         },
         child: const Icon(Icons.add),
       ),
@@ -65,6 +64,6 @@ class _VerProveedorState extends State<VerProveedor> {
 
 void main() {
   runApp(const MaterialApp(
-    home: VerProveedor(),
+    home: Proveedor(),
   ));
 }
