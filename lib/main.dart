@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:autos/View/Home.dart';
 import 'package:autos/View/login.dart';
 import 'package:autos/View/tes.dart';
+import 'package:autos/View/Proveedor.dart';
+import 'package:autos/View/VerProveedor.dart';
+import 'package:autos/View/VerReservas.dart';
 
 void main() {
   runApp(const MyApp());
@@ -38,7 +41,9 @@ class MyHomePage extends StatefulWidget {
 class _MyHomePageState extends State<MyHomePage> {
   static List<Widget> _content2 = [
     Home(),
-    name()
+    name(),
+    Proveedor(),
+    VerSolicitudesReserva()
   ];
 
   int _selectedIndex = 0;
@@ -69,6 +74,15 @@ class _MyHomePageState extends State<MyHomePage> {
             icon: Icon(Icons.business),
             label: 'Horizontal',
           ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Proveedor',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.business),
+            label: 'Reservas',
+          ),
+          
         ],
         currentIndex: _selectedIndex,
         selectedItemColor: const Color.fromARGB(255, 7, 255, 44),
@@ -109,6 +123,7 @@ class _MyHomePageState extends State<MyHomePage> {
                 Navigator.pop(context);
               },
             ),
+            
             Spacer(),
             Padding(
               padding: const EdgeInsets.all(16.0),
