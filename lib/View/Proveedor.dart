@@ -20,7 +20,7 @@ class _ProveedorState extends State<Proveedor> {
           return Card(
             margin: const EdgeInsets.all(10),
             child: ListTile(
-              leading: Image.asset('assets/images/car_login.jpg', width: 100, height: 150, fit: BoxFit.cover), 
+              leading: Image.asset('assets/images/buggati.jpg', width: 100, height: 150, fit: BoxFit.cover), 
               title: Text('Marca del Auto $index (Año)'), 
               subtitle: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,

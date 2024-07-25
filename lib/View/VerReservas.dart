@@ -21,7 +21,7 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
             margin: const EdgeInsets.all(10),
             child: ListTile(
               leading: CircleAvatar(
-                backgroundImage: AssetImage('assets/images/car_login.jpg'), // Imagen de ejemplo
+                backgroundImage: AssetImage('assets/images/bugatti-chiron-pur-sport-grand-prix-soymotor.jpg'), // Imagen de ejemplo
               ),
               title: Text('Usuario $index'), // Información de ejemplo
               subtitle: Column(

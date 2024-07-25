@@ -18,7 +18,7 @@ class MyApp extends StatelessWidget {
     return MaterialApp(
       title: 'Alquiler',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
+        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 130, 37, 255)),
         useMaterial3: true,
         bottomNavigationBarTheme: BottomNavigationBarThemeData(
           selectedItemColor: Color.fromARGB(255, 7, 255, 44),
@@ -85,7 +85,7 @@ class _MyHomePageState extends State<MyHomePage> {
           
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 7, 255, 44),
+        selectedItemColor: const Color.fromARGB(255, 110, 172, 218),
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
