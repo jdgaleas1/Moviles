@@ -18,7 +18,6 @@ class MyApp extends StatelessWidget {
       title: 'Alquiler',
       theme: ThemeData(
         colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 242, 117, 8)),
-        colorScheme: ColorScheme.fromSeed(seedColor: Color.fromRGBO(255, 130, 37, 255)),
         useMaterial3: true,
         bottomNavigationBarTheme: const BottomNavigationBarThemeData(
           selectedItemColor: Color.fromARGB(255, 7, 255, 44),
