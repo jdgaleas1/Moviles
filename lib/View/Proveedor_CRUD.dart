@@ -1,3 +1,4 @@
+import 'package:autos/View/AgregarAuto.dart';
 import 'package:flutter/material.dart';
 
 class Proveedor extends StatefulWidget {
@@ -54,7 +55,10 @@ class _ProveedorState extends State<Proveedor> {
       ),
       floatingActionButton: FloatingActionButton(
         onPressed: () {
-          // Acción de agregar nuevo auto
+          Navigator.push(
+            context,
+            MaterialPageRoute(builder: (context) => const AgregarAuto()),
+          );
         },
         child: const Icon(Icons.add),
       ),
