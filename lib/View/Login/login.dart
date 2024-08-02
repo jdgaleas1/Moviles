@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
-import 'package:autos/View/create_account.dart';
-import 'package:autos/View/RecuperarContra.dart';
+import 'package:autos/View/Login/create_account.dart';
+import 'package:autos/View/Login/RecuperarContra.dart';
 
 bool esCliente = false;
 bool esProveedor = false;

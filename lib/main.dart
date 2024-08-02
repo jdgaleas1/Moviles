@@ -1,9 +1,10 @@
-import 'package:autos/View/Cliente_Home.dart';
+import 'package:autos/View/Cliente/Cliente_Home.dart';
+import 'package:autos/View/Drawer.dart';
 import 'package:flutter/material.dart';
-import 'package:autos/View/Cliente_reservas.dart';
-import 'package:autos/View/login.dart';
-import 'package:autos/View/Proveedor_CRUD.dart';
-import 'package:autos/View/Proveedor_VerReservas.dart';
+import 'package:autos/View/Cliente/Cliente_reservas.dart';
+import 'package:autos/View/Login/login.dart';
+import 'package:autos/View/Proveedor/Proveedor_CRUD.dart';
+import 'package:autos/View/Proveedor/Proveedor_VerReservas.dart';
 
 void main() {
   runApp(const MyApp());
@@ -11,7 +12,6 @@ void main() {
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
-
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -25,6 +25,7 @@ class MyApp extends StatelessWidget {
         ),
       ),
       home: const LoginPage(),
+      debugShowCheckedModeBanner: false,
     );
   }
 }
@@ -32,7 +33,6 @@ class MyApp extends StatelessWidget {
 class MyHomePage extends StatefulWidget {
   const MyHomePage({super.key, required this.title});
   final String title;
-
   @override
   State<MyHomePage> createState() => _MyHomePageState();
 }
@@ -59,7 +59,6 @@ class _MyHomePageState extends State<MyHomePage> {
         const VerSolicitudesReserva(),
       ];
     } else {
-      // Proporciona una vista predeterminada en caso de error
       _content = [
         Center(child: Text('cliente: ${esCliente.toString()} proveedor: ${esProveedor.toString()}')),
       ];
@@ -111,103 +110,9 @@ class _MyHomePageState extends State<MyHomePage> {
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
-      drawer: Drawer(
-        child: Column(
-          children: <Widget>[
-            DrawerHeader(
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage('assets/images/car_drawer.jpg'),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              margin: EdgeInsets.zero,
-              padding: EdgeInsets.zero,
-              child: Container(),
-            ),
-            const SizedBox(height: 16),
-            const Column(
-              children: [
-                CircleAvatar(
-                  backgroundImage: AssetImage('assets/images/avatar.png'), // Cambia esto por la ruta de tu imagen de avatar
-                  radius: 40,
-                ),
-                SizedBox(height: 10),
-                Text(
-                  'Usuario123',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 18,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                Text(
-                  'usuario123@espe.edu',
-                  style: TextStyle(
-                    color: Colors.black,
-                    fontSize: 14,
-                  ),
-                ),
-                Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 16.0), // Espaciado a los lados
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Text(
-                        'Tipo de usuario: ',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
-                      ),
-                      Text(
-                        '------------',
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontSize: 12,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-            ListTile(
-              leading: const Icon(Icons.home),
-              title: const Text('Home'),
-              onTap: () {
-                _onItemTapped(0);
-                Navigator.pop(context);
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.car_rental_outlined),
-              title: const Text('Reservas Hechas'),
-              onTap: () {
-                _onItemTapped(1);
-                Navigator.pop(context);
-              },
-            ),
-            const Spacer(),
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: ElevatedButton(
-                onPressed: () => _cerrarSesion(context),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 242, 117, 8),
-                  padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(30.0),
-                  ),
-                ),
-                child: const Text(
-                  'Cerrar Sesión',
-                  style: TextStyle(color: Colors.white),
-                ),
-              ),
-            ),
-          ],
-        ),
+      drawer: CustomDrawer(
+        onItemTapped: _onItemTapped,
+        onLogout: () => _cerrarSesion(context),
       ),
     );
   }

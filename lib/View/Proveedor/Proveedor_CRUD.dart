@@ -1,4 +1,4 @@
-import 'package:autos/View/AgregarAuto.dart';
+import 'package:autos/View/Proveedor/AgregarAuto.dart';
 import 'package:flutter/material.dart';
 
 class Proveedor extends StatefulWidget {
