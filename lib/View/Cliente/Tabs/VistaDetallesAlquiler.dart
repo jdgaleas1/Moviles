@@ -1,13 +1,12 @@
 import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
-import 'package:share/share.dart';
 
 class DetallesAlquilerPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     
-    final String url = "https://share.RentalCar.com/mje82744";
+    final String Coche = "Mazda de 4 puertas - nombre: -----------";
     final String message = 'Mira este enlace de alquiler de coches!';
 
     return Scaffold(
@@ -17,7 +16,7 @@ class DetallesAlquilerPage extends StatelessWidget {
           IconButton(
             icon: const Icon(Icons.ios_share),  // Icono de compartir
             onPressed: () {
-              FlutterShareMe().shareToWhatsApp(msg: '$message $url');
+              FlutterShareMe().shareToWhatsApp(msg: '$message $Coche');
             },
           ),
         ],

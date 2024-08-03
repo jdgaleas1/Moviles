@@ -31,7 +31,7 @@ dependencies:
   flutter:
     sdk: flutter
   provider: ^6.0.0
-  share: ^2.0.4
+  #share: ^2.0.4
   flutter_share_me: ^1.1.0
 
 

@@ -1,7 +1,8 @@
 // tab_todos.dart
 import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
 import 'package:autos/View/Cliente/Tabs/animacionFrontal.dart';
-import 'package:autos/View/Cliente/Tabs/detallesAlquiler.dart';
+import 'package:autos/View/Cliente/Tabs/VistaDetallesAlquiler.dart';
+import 'package:autos/View/Cliente/Tabs/vistaTraseraCarta.dart';
 import 'package:flutter/material.dart';
 
 class TodosTab extends StatefulWidget {
@@ -98,22 +99,6 @@ class _TodosTabState extends State<TodosTab> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  Widget buildBackView(int index) {
-    return Card(
-      clipBehavior: Clip.antiAlias,
-      child: Container(
-        alignment: Alignment.center,
-        padding: const EdgeInsets.all(8),
-        child: Text(
-          'Detalles adicionales del carro $index',
-          style: const TextStyle(
-              fontSize: 14, color: Color.fromARGB(255, 0, 0, 0)),
-          textAlign: TextAlign.center,
-        ),
       ),
     );
   }
