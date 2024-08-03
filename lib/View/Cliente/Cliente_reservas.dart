@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class ClienteReservas extends StatefulWidget {
-  const ClienteReservas({super.key});
+   ClienteReservas({super.key});
 
   @override
   State<ClienteReservas> createState() => _ClienteReservasState();
@@ -12,7 +12,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
 
   loadReservas() async {
     // Simulación de la carga de datos
-    await Future.delayed(const Duration(seconds: 2));
+    await Future.delayed( Duration(seconds: 2));
     _reservas = [
       Reserva(id: 1, title: "Reserva 1"),
       Reserva(id: 2, title: "Reserva 2"),
@@ -36,14 +36,14 @@ class _ClienteReservasState extends State<ClienteReservas> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Mis Reservas'),
+        title:  Text('Mis Reservas'),
       ),
       body: Padding(
-        padding: const EdgeInsets.all(16.0),
+        padding:  EdgeInsets.all(16.0),
         child: _reservas.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ?  Center(child: CircularProgressIndicator())
             : GridView.builder(
-                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                gridDelegate:  SliverGridDelegateWithFixedCrossAxisCount(
                   crossAxisCount: 2,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
@@ -56,7 +56,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
                       // Acción al hacer clic en una reserva
                     },
                     child: Container(
-                      padding: const EdgeInsets.all(16),
+                      padding:  EdgeInsets.all(16),
                       decoration: BoxDecoration(
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
@@ -65,7 +65,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
                             color: Colors.grey.withOpacity(0.5),
                             spreadRadius: 2,
                             blurRadius: 5,
-                            offset: const Offset(0, 3),
+                            offset:  Offset(0, 3),
                           ),
                         ],
                       ),
@@ -77,10 +77,10 @@ class _ClienteReservasState extends State<ClienteReservas> {
                             size: 40,
                             color: Theme.of(context).primaryColor,
                           ),
-                          const SizedBox(height: 10),
+                           SizedBox(height: 10),
                           Text(
                             reserva.title,
-                            style: const TextStyle(
+                            style:  TextStyle(
                               fontSize: 18,
                               color: Colors.black,
                             ),

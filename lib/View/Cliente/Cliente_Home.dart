@@ -1,4 +1,8 @@
+// cliente_home.dart
+import 'package:autos/Model/EstadosModel.dart';
+import 'package:autos/View/Login/login.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 import 'package:autos/View/Cliente/Cliente_reservas.dart';
 import 'package:autos/View/Cliente/Tabs/tabBuscar.dart';
 import 'package:autos/View/Cliente/Tabs/tabCercanos.dart';
@@ -6,7 +10,7 @@ import 'package:autos/View/Cliente/Tabs/tabTodos.dart';
 import 'package:autos/View/Drawer.dart';
 
 class ClienteHome extends StatefulWidget {
-  const ClienteHome({super.key});
+   ClienteHome({super.key});
 
   @override
   State<ClienteHome> createState() => _ClienteHomeState();
@@ -27,26 +31,22 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
     super.dispose();
   }
 
-  void _refresh() {
-    setState(() {
-      
-    });
-  }
-
   @override
   Widget build(BuildContext context) {
+    var buttonVisibility = Provider.of<ButtonVisibility>(context);
+
     return Scaffold(
       appBar: PreferredSize(
-        preferredSize: const Size.fromHeight(kToolbarHeight), // Altura solo para las pestañas
+        preferredSize:  Size.fromHeight(kToolbarHeight),
         child: AppBar(
           bottom: TabBar(
             controller: _tabController,
-            tabs: const [
+            tabs:  [
               Tab(text: 'Todos'),
               Tab(text: 'Cercanos'),
               Tab(text: 'Buscar'),
             ],
-            labelStyle: const TextStyle(fontSize: 14), // Tamaño de fuente reducido
+            labelStyle:  TextStyle(fontSize: 14),
           ),
         ),
       ),
@@ -67,11 +67,11 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
         onLogout: () {
           // Implementa la lógica de cerrar sesión aquí
         },
-        onToggleVisibility: _refresh, // Llama a _refresh cuando se cambia la visibilidad
+        esCliente: esCliente,
       ),
       floatingActionButton: Stack(
         children: [
-          if (carritoVisible)
+          if (buttonVisibility.carritoVisible)
             Positioned(
               bottom: 80,
               right: 10,
@@ -80,14 +80,14 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
                 onPressed: () {
                   Navigator.push(
                     context,
-                    MaterialPageRoute(builder: (context) => const ClienteReservas()),
+                    MaterialPageRoute(builder: (context) =>  ClienteReservas()),
                   );
                 },
-                child: const Icon(Icons.shopping_cart), // Ícono de carrito
+                child:  Icon(Icons.shopping_cart),
                 tooltip: 'Carrito',
               ),
             ),
-          if (lupaVisible)
+          if (buttonVisibility.lupaVisible)
             Positioned(
               bottom: 10,
               right: 10,
@@ -96,7 +96,7 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
                 onPressed: () {
                   _tabController.animateTo(2);
                 },
-                child: const Icon(Icons.search), // Ícono de lupa
+                child:  Icon(Icons.search),
                 tooltip: 'Buscar',
               ),
             ),

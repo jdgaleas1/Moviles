@@ -1,26 +1,22 @@
+// drawer.dart
+import 'package:autos/Model/TemasModel.dart';
+import 'package:autos/Model/EstadosModel.dart';
+import 'package:autos/View/Login/login.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
 
-// Variables globales para controlar la visibilidad
-bool lupaVisible = false;
-bool carritoVisible = false;
-
-class CustomDrawer extends StatefulWidget {
+class CustomDrawer extends StatelessWidget {
   final Function(int) onItemTapped;
   final VoidCallback onLogout;
-  final VoidCallback? onToggleVisibility;
+  final bool esCliente; 
 
-  const CustomDrawer({
+   CustomDrawer({
     super.key,
     required this.onItemTapped,
     required this.onLogout,
-     this.onToggleVisibility,
+    required this.esCliente,
   });
 
-  @override
-  _CustomDrawerState createState() => _CustomDrawerState();
-}
-
-class _CustomDrawerState extends State<CustomDrawer> {
   @override
   Widget build(BuildContext context) {
     return Drawer(
@@ -28,7 +24,7 @@ class _CustomDrawerState extends State<CustomDrawer> {
         padding: EdgeInsets.zero,
         children: <Widget>[
           DrawerHeader(
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               image: DecorationImage(
                 image: AssetImage('assets/images/car_drawer.jpg'),
                 fit: BoxFit.cover,
@@ -38,8 +34,8 @@ class _CustomDrawerState extends State<CustomDrawer> {
             padding: EdgeInsets.zero,
             child: Container(),
           ),
-          const SizedBox(height: 16),
-          const Column(
+          SizedBox(height: 16),
+          Column(
             children: [
               CircleAvatar(
                 backgroundImage: AssetImage('assets/images/avatar.png'),
@@ -48,37 +44,33 @@ class _CustomDrawerState extends State<CustomDrawer> {
               SizedBox(height: 10),
               Text(
                 'Usuario123',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 18,
-                  fontWeight: FontWeight.bold,
-                ),
+                style: Theme.of(context).textTheme.bodyLarge!.copyWith(
+                      fontSize: 18,
+                      fontWeight: FontWeight.bold,
+                    ),
               ),
               Text(
                 'usuario123@espe.edu',
-                style: TextStyle(
-                  color: Colors.black,
-                  fontSize: 14,
-                ),
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontSize: 14,
+                    ),
               ),
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
+                padding:  EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
                       'Tipo de usuario: ',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 12,
+                          ),
                     ),
                     Text(
                       '------------',
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 12,
-                      ),
+                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                            fontSize: 12,
+                          ),
                     ),
                   ],
                 ),
@@ -86,65 +78,95 @@ class _CustomDrawerState extends State<CustomDrawer> {
             ],
           ),
           ListTile(
-            leading: const Icon(Icons.home),
-            title: const Text('Home'),
+            leading:  Icon(Icons.home),
+            title:  Text('Home'),
             onTap: () {
-              widget.onItemTapped(0);
+              onItemTapped(0);
               Navigator.pop(context);
             },
           ),
           ListTile(
-            leading: const Icon(Icons.car_rental_outlined),
-            title: const Text('Reservas Hechas'),
+            leading:  Icon(Icons.car_rental_outlined),
+            title:  Text('Reservas Hechas'),
             onTap: () {
-              widget.onItemTapped(1);
+              onItemTapped(1);
               Navigator.pop(context);
             },
           ),
-          // Botón de acordeón para los interruptores
           ExpansionTile(
-            leading: const Icon(Icons.settings),
-            title: const Text('Configuración'),
+            leading:  Icon(Icons.settings),
+            title:  Text('Configuración'),
             children: <Widget>[
+              if (esCliente) ...[
+            SwitchListTile(
+              title:  Text('Mostrar Lupa'),
+              value: Provider.of<ButtonVisibility>(context).lupaVisible,
+              onChanged: (bool value) {
+                Provider.of<ButtonVisibility>(context, listen: false).toggleLupaVisibility();
+              },
+            ),
+            SwitchListTile(
+              title:  Text('Mostrar Carrito'),
+              value: Provider.of<ButtonVisibility>(context).carritoVisible,
+              onChanged: (bool value) {
+                Provider.of<ButtonVisibility>(context, listen: false).toggleCarritoVisibility();
+              },
+            ),
+          ],
+
               SwitchListTile(
-                title: const Text('Mostrar Lupa'),
-                value: lupaVisible,
-                onChanged: (bool value) {
-                  setState(() {
-                    lupaVisible = value;
-                  });
-                  if (widget.onToggleVisibility != null) {
-                    widget.onToggleVisibility!();
-                  }
+                title: Text('Tema Claro'),
+                value: Provider.of<ThemeProvider>(context).getTheme() ==
+                    AppThemes.lightTheme,
+                onChanged: (value) {
+                  Provider.of<ThemeProvider>(context, listen: false)
+                      .setTheme(AppThemes.lightTheme);
                 },
               ),
               SwitchListTile(
-                title: const Text('Mostrar Carrito'),
-                value: carritoVisible,
-                onChanged: (bool value) {
-                  setState(() {
-                    carritoVisible = value;
-                  });
-                  if (widget.onToggleVisibility != null) {
-                    widget.onToggleVisibility!();
-                  }
+                title: Text('Tema Oscuro'),
+                value: Provider.of<ThemeProvider>(context).getTheme() ==
+                    AppThemes.darkTheme,
+                onChanged: (value) {
+                  Provider.of<ThemeProvider>(context, listen: false)
+                      .setTheme(AppThemes.darkTheme);
+                },
+              ),
+              // Continúa dentro del Drawer, donde tienes otros elementos
+              SwitchListTile(
+                title: Text('Tema Azul'),
+                value: Provider.of<ThemeProvider>(context).getTheme() ==
+                    AppThemes.blueTheme,
+                onChanged: (value) {
+                  Provider.of<ThemeProvider>(context, listen: false)
+                      .setTheme(AppThemes.blueTheme);
+                },
+              ),
+              SwitchListTile(
+                title: Text('Tema Rosa'),
+                value: Provider.of<ThemeProvider>(context).getTheme() ==
+                    AppThemes.pinkTheme,
+                onChanged: (value) {
+                  Provider.of<ThemeProvider>(context, listen: false)
+                      .setTheme(AppThemes.pinkTheme);
                 },
               ),
             ],
           ),
-          const SizedBox(height: 20),
+           SizedBox(height: 20),
           Padding(
-            padding: const EdgeInsets.all(16.0),
+            padding:  EdgeInsets.all(16.0),
             child: ElevatedButton(
-              onPressed: widget.onLogout,
+              onPressed: onLogout,
               style: ElevatedButton.styleFrom(
-                backgroundColor: const Color.fromARGB(255, 242, 117, 8),
-                padding: const EdgeInsets.symmetric(horizontal: 50, vertical: 15),
+                backgroundColor:  Color.fromARGB(255, 242, 117, 8),
+                padding:
+                     EdgeInsets.symmetric(horizontal: 50, vertical: 15),
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                 ),
               ),
-              child: const Text(
+              child:  Text(
                 'Cerrar Sesión',
                 style: TextStyle(color: Colors.white),
               ),

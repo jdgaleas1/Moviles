@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class RecuperarContrasena extends StatefulWidget {
-  const RecuperarContrasena({super.key});
+   RecuperarContrasena({super.key});
 
   @override
   State<RecuperarContrasena> createState() => _RecuperarContrasenaState();
@@ -26,18 +26,18 @@ class _RecuperarContrasenaState extends State<RecuperarContrasena> with SingleTi
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Recuperar Contraseña'),
+        title:  Text('Recuperar Contraseña'),
         centerTitle: true,
         backgroundColor: Colors.white,
         leading: IconButton(
-          icon: const Icon(Icons.close, color: Colors.black),
+          icon:  Icon(Icons.close, color: Colors.black),
           onPressed: () {
             Navigator.of(context).pop();
           },
         ),
         bottom: TabBar(
           controller: _tabController,
-          tabs: const [
+          tabs:  [
             Tab(text: 'Verificación'),
             Tab(text: 'Cambio de contraseña'),
           ],
@@ -48,7 +48,7 @@ class _RecuperarContrasenaState extends State<RecuperarContrasena> with SingleTi
       ),
       body: TabBarView(
         controller: _tabController,
-        children: const [
+        children:  [
           VerificacionTab(),
           CambioContrasenaTab(),
         ],
@@ -58,12 +58,12 @@ class _RecuperarContrasenaState extends State<RecuperarContrasena> with SingleTi
 }
 
 class VerificacionTab extends StatelessWidget {
-  const VerificacionTab({super.key});
+   VerificacionTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding:  EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -76,45 +76,45 @@ class VerificacionTab extends StatelessWidget {
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 ElevatedButton(
                   onPressed: () {},
-                  child: const Text('Enviar'),
+                  child:  Text('Enviar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),
                 ),
                 ElevatedButton(
                   onPressed: () {},
-                  child: const Text('Regresar'),
+                  child:  Text('Regresar'),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Colors.blue,
                   ),
                 ),
               ],
             ),
-            const SizedBox(height: 20),
-            const Text(
+             SizedBox(height: 20),
+             Text(
               'Ingresa el código que recibiste.',
               style: TextStyle(color: Colors.grey),
             ),
-            const SizedBox(height: 10),
+             SizedBox(height: 10),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Código',
-                prefixIcon: const Icon(Icons.lock_outline),
+                prefixIcon:  Icon(Icons.lock_outline),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
-              child: const Text('Enviar codigo de recuperación'),
+              child:  Text('Enviar codigo de recuperación'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
               ),
@@ -127,12 +127,12 @@ class VerificacionTab extends StatelessWidget {
 }
 
 class CambioContrasenaTab extends StatelessWidget {
-  const CambioContrasenaTab({super.key});
+   CambioContrasenaTab({super.key});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding:  EdgeInsets.all(16.0),
       child: SingleChildScrollView(
         child: Column(
           children: [
@@ -145,7 +145,7 @@ class CambioContrasenaTab extends StatelessWidget {
               ),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20),
             TextField(
               decoration: InputDecoration(
                 labelText: 'Confirmar nueva contraseña',
@@ -155,10 +155,10 @@ class CambioContrasenaTab extends StatelessWidget {
               ),
               obscureText: true,
             ),
-            const SizedBox(height: 20),
+             SizedBox(height: 20),
             ElevatedButton(
               onPressed: () {},
-              child: const Text('Cambiar contraseña'),
+              child:  Text('Cambiar contraseña'),
               style: ElevatedButton.styleFrom(
                 backgroundColor: Colors.blue,
               ),

@@ -1,4 +1,7 @@
-import 'package:autos/View/Cliente/Tabs/animacionCard.dart';
+// tab_todos.dart
+import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
+import 'package:autos/View/Cliente/Tabs/animacionFrontal.dart';
+import 'package:autos/View/Cliente/Tabs/detallesAlquiler.dart';
 import 'package:flutter/material.dart';
 
 class TodosTab extends StatefulWidget {
@@ -24,7 +27,7 @@ class _TodosTabState extends State<TodosTab> {
         ),
         itemCount: 10,
         itemBuilder: (context, index) {
-          return AnimarTabTodos(
+          return AnimarTab(
             isFlipped: isFlipped[index],
             frontWidget: buildFrontView(index),
             backWidget: buildBackView(index),
@@ -67,13 +70,17 @@ class _TodosTabState extends State<TodosTab> {
                       Expanded(
                         child: ElevatedButton(
                           onPressed: () {
-                            // Aquí puedes agregar la lógica que necesites para reservar
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => DetallesAlquilerPage()),
+                            );
                           },
-                          child: const Text('RESERVAR',
-                              style: TextStyle(fontSize: 5)),
                           style: ElevatedButton.styleFrom(
                               minimumSize: const Size(50, 25),
-                              backgroundColor: Colors.green),
+                              backgroundColor: Color.fromARGB(255, 1, 46, 65)),
+                              //backgroundColor: Theme.of(context).colorScheme.secondary),
+                          child: const Text('RESERVAR',
+                              style: TextStyle(fontSize: 5)),
                         ),
                       ),
                       const SizedBox(width: 10),
@@ -81,9 +88,7 @@ class _TodosTabState extends State<TodosTab> {
                         icon: const Icon(
                           Icons.add_shopping_cart,
                         ),
-                        onPressed: () {
-                          // Aquí puedes agregar la lógica que necesites para el carrito
-                        },
+                          onPressed: () => NotificationHelper.showAddedNotification(context),
                         color: Colors.grey,
                       )
                     ],
@@ -105,11 +110,9 @@ class _TodosTabState extends State<TodosTab> {
         padding: const EdgeInsets.all(8),
         child: Text(
           'Detalles adicionales del carro $index',
-          style: TextStyle(fontSize: 14, color: Colors.white),
+          style: const TextStyle(
+              fontSize: 14, color: Color.fromARGB(255, 0, 0, 0)),
           textAlign: TextAlign.center,
-        ),
-        decoration: BoxDecoration(
-          color: Colors.blueGrey,
         ),
       ),
     );

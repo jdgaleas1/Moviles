@@ -1,3 +1,5 @@
+import 'package:autos/Model/TemasModel.dart';
+import 'package:autos/Model/EstadosModel.dart';
 import 'package:autos/View/Cliente/Cliente_Home.dart';
 import 'package:autos/View/Drawer.dart';
 import 'package:flutter/material.dart';
@@ -5,33 +7,39 @@ import 'package:autos/View/Cliente/Cliente_reservas.dart';
 import 'package:autos/View/Login/login.dart';
 import 'package:autos/View/Proveedor/Proveedor_CRUD.dart';
 import 'package:autos/View/Proveedor/Proveedor_VerReservas.dart';
-
+import 'package:provider/provider.dart';
 void main() {
-  runApp(const MyApp());
+  runApp(
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ButtonVisibility()),
+        ChangeNotifierProvider(
+          create: (_) => ThemeProvider(AppThemes.lightTheme),
+        ),
+      ],
+      child:  MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget {
-  const MyApp({super.key});
+   MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
+    // Obtén el tema actual del ThemeProvider
+    final themeProvider = Provider.of<ThemeProvider>(context);
+
     return MaterialApp(
       title: 'Alquiler',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: const Color.fromARGB(255, 242, 117, 8)),
-        useMaterial3: true,
-        bottomNavigationBarTheme: const BottomNavigationBarThemeData(
-          selectedItemColor: Color.fromARGB(255, 7, 255, 44),
-          unselectedItemColor: Colors.grey,
-        ),
-      ),
-      home: const LoginPage(),
+      theme: themeProvider.getTheme(),
+      home:  LoginPage(), // Asegúrate de tener esta página definida
       debugShowCheckedModeBanner: false,
     );
   }
 }
-
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+   MyHomePage({super.key, required this.title});
   final String title;
   @override
   State<MyHomePage> createState() => _MyHomePageState();
@@ -50,17 +58,19 @@ class _MyHomePageState extends State<MyHomePage> {
   void _initializeContent() {
     if (esCliente) {
       _content = [
-        const ClienteHome(),
-        const ClienteReservas(),
+         ClienteHome(),
+         ClienteReservas(),
       ];
     } else if (esProveedor) {
       _content = [
-        const Proveedor(),
-        const VerSolicitudesReserva(),
+         Proveedor(),
+         VerSolicitudesReserva(),
       ];
     } else {
       _content = [
-        Center(child: Text('cliente: ${esCliente.toString()} proveedor: ${esProveedor.toString()}')),
+        Center(
+            child: Text(
+                'cliente: ${esCliente.toString()} proveedor: ${esProveedor.toString()}')),
       ];
     }
     _selectedIndex = 0;
@@ -79,7 +89,7 @@ class _MyHomePageState extends State<MyHomePage> {
     esProveedor = false;
     Navigator.pushAndRemoveUntil(
       context,
-      MaterialPageRoute(builder: (context) => const LoginPage()),
+      MaterialPageRoute(builder: (context) =>  LoginPage()),
       (Route<dynamic> route) => false,
     );
   }
@@ -89,13 +99,13 @@ class _MyHomePageState extends State<MyHomePage> {
     return Scaffold(
       appBar: AppBar(
         backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: const Text("Alquiler"),
+        title:  Text("Alquiler"),
       ),
       body: Center(
         child: _content[_selectedIndex],
       ),
       bottomNavigationBar: BottomNavigationBar(
-        items: const <BottomNavigationBarItem>[
+        items:  <BottomNavigationBarItem>[
           BottomNavigationBarItem(
             icon: Icon(Icons.home),
             label: 'Home',
@@ -106,13 +116,14 @@ class _MyHomePageState extends State<MyHomePage> {
           ),
         ],
         currentIndex: _selectedIndex,
-        selectedItemColor: const Color.fromARGB(255, 110, 172, 218),
+        selectedItemColor:  Color.fromARGB(255, 110, 172, 218),
         unselectedItemColor: Colors.grey,
         onTap: _onItemTapped,
       ),
       drawer: CustomDrawer(
         onItemTapped: _onItemTapped,
         onLogout: () => _cerrarSesion(context),
+        esCliente: esCliente,
       ),
     );
   }

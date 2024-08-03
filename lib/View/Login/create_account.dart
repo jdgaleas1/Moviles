@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class CreateAccountPage extends StatefulWidget {
-  const CreateAccountPage({super.key});
+   CreateAccountPage({super.key});
 
   @override
   _CreateAccountPageState createState() => _CreateAccountPageState();
@@ -25,7 +25,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
 
       // Muestra un mensaje de éxito (o maneja la creación de cuenta como necesites)
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Cuenta creada con éxito')),
+         SnackBar(content: Text('Cuenta creada con éxito')),
       );
 
       // Navega a otra página o regresa al login
@@ -47,7 +47,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                padding:  EdgeInsets.symmetric(horizontal: 40.0),
                 child: Form(
                   key: _formKey,
                   child: Column(
@@ -70,7 +70,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                       SizedBox(height: 20),
                       TextFormField(
                         controller: _passwordController,
                         decoration: InputDecoration(
@@ -103,7 +103,7 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                       SizedBox(height: 20),
                       TextFormField(
                         controller: _confirmPasswordController,
                         decoration: InputDecoration(
@@ -139,36 +139,36 @@ class _CreateAccountPageState extends State<CreateAccountPage> {
                           return null;
                         },
                       ),
-                      const SizedBox(height: 20),
+                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: _createAccount,
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Color.fromARGB(255, 39, 218, 147),
-                          padding: const EdgeInsets.symmetric(
+                          padding:  EdgeInsets.symmetric(
                               horizontal: 30, vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
                         ),
-                        child: const Text(
+                        child:  Text(
                           'Crear Cuenta',
                           style: TextStyle(color: Colors.white),
                         ),
                       ),
-                      const SizedBox(height: 20),
+                       SizedBox(height: 20),
                       ElevatedButton(
                         onPressed: () {
                           Navigator.pop(context); // Regresa al login
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.blueAccent,
-                          padding: const EdgeInsets.symmetric(
+                          padding:  EdgeInsets.symmetric(
                               horizontal: 30, vertical: 15),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(30.0),
                           ),
                         ),
-                        child: const Text(
+                        child:  Text(
                           'Volver al Login',
                           style: TextStyle(color: Colors.white),
                         ),

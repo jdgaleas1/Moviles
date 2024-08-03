@@ -8,7 +8,7 @@ bool esCliente = false;
 bool esProveedor = false;
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({super.key});
+   LoginPage({super.key});
 
   @override
   // ignore: library_private_types_in_public_api
@@ -27,10 +27,10 @@ class _LoginPageState extends State<LoginPage> {
     esProveedor = false;
 
     // Datos estáticos para el ejemplo
-    const String clienteEmail = 'cliente';
-    const String clientePassword = 'cliente123';
-    const String proveedorEmail = 'proveedor';
-    const String proveedorPassword = 'proveedor123';
+     String clienteEmail = 'cliente';
+     String clientePassword = 'cliente123';
+     String proveedorEmail = 'proveedor';
+     String proveedorPassword = 'proveedor123';
 
     if (_usuarioController.text == clienteEmail &&
         _contrasenaController.text == clientePassword) {
@@ -43,7 +43,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+            builder: (context) =>  MyHomePage(title: 'Alquiler Autos')),
       );
     } else if (_usuarioController.text == proveedorEmail &&
         _contrasenaController.text == proveedorPassword) {
@@ -56,12 +56,12 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+            builder: (context) =>  MyHomePage(title: 'Alquiler Autos')),
       );
     } else {
       // Muestra un mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Usuario o contraseña incorrectos')),
+         SnackBar(content: Text('Usuario o contraseña incorrectos')),
       );
     }
   }
@@ -70,7 +70,7 @@ class _LoginPageState extends State<LoginPage> {
     try {
       final bool didAuthenticate = await auth.authenticate(
         localizedReason: 'Por favor autentícate para acceder',
-        options: const AuthenticationOptions(
+        options:  AuthenticationOptions(
           biometricOnly: true,
         ),
       );
@@ -79,7 +79,7 @@ class _LoginPageState extends State<LoginPage> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-              builder: (context) => const MyHomePage(title: 'Alquiler Autos')),
+              builder: (context) =>  MyHomePage(title: 'Alquiler Autos')),
         );
       }
     } catch (e) {
@@ -103,14 +103,14 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 40.0),
+                padding:  EdgeInsets.symmetric(horizontal: 40.0),
                 child: Column(
                   children: <Widget>[
                     TextField(
                       controller: _usuarioController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon: const Icon(Icons.email, color: Colors.black),
+                        prefixIcon:  Icon(Icons.email, color: Colors.black),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.8),
                         border: OutlineInputBorder(
@@ -118,12 +118,12 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                     SizedBox(height: 20),
                     TextField(
                       controller: _contrasenaController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon: const Icon(Icons.lock, color: Colors.black),
+                        prefixIcon:  Icon(Icons.lock, color: Colors.black),
                         suffixIcon: IconButton(
                           icon: Icon(
                             _obscureText
@@ -145,43 +145,43 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       obscureText: _obscureText,
                     ),
-                    const SizedBox(height: 20),
+                     SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => const RecuperarContrasena()),
+                              builder: (context) =>  RecuperarContrasena()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(
+                        padding:  EdgeInsets.symmetric(
                             horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child: const Text(
+                      child:  Text(
                         'Recuperar Contraseña',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                    const SizedBox(height: 20),
+                     SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         ElevatedButton(
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 39, 218, 147),
-                            padding: const EdgeInsets.symmetric(
+                            backgroundColor:  Color.fromARGB(255, 39, 218, 147),
+                            padding:  EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          child: const Text(
+                          child:  Text(
                             'Ingresar',
                             style: TextStyle(color: Colors.white),
                           ),
@@ -192,32 +192,32 @@ class _LoginPageState extends State<LoginPage> {
                               context,
                               MaterialPageRoute(
                                   builder: (context) =>
-                                      const CreateAccountPage()),
+                                       CreateAccountPage()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: const Color.fromARGB(255, 39, 218, 147),
-                            padding: const EdgeInsets.symmetric(
+                            backgroundColor:  Color.fromARGB(255, 39, 218, 147),
+                            padding:  EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          child: const Text(
+                          child:  Text(
                             'Crear Cuenta',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ],
                     ),
-                    const SizedBox(height: 20),
+                     SizedBox(height: 20),
                     ElevatedButton.icon(
                       onPressed: _authenticate,
-                      icon: const Icon(Icons.fingerprint),
-                      label: const Text('Huella'),
+                      icon:  Icon(Icons.fingerprint),
+                      label:  Text('Huella'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding: const EdgeInsets.symmetric(
+                        padding:  EdgeInsets.symmetric(
                             horizontal: 50, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),

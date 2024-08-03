@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 
-class AnimarTabTodos extends StatelessWidget {
+class AnimarTab extends StatelessWidget {
   final bool isFlipped;
   final Widget frontWidget;
   final Widget backWidget;
   final VoidCallback onFlip;
 
-  const AnimarTabTodos({
+  const AnimarTab({
     Key? key,
     required this.isFlipped,
     required this.frontWidget,
