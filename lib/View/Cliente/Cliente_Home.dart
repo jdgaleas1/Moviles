@@ -33,7 +33,7 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
-    var buttonVisibility = Provider.of<ButtonVisibility>(context);
+    var buttonVisibility = Provider.of<Estados>(context);
 
     return Scaffold(
       appBar: PreferredSize(

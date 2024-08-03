@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:autos/main.dart';
 import 'package:autos/View/Login/create_account.dart';
 import 'package:autos/View/Login/RecuperarContra.dart';
@@ -8,10 +7,9 @@ bool esCliente = false;
 bool esProveedor = false;
 
 class LoginPage extends StatefulWidget {
-   LoginPage({super.key});
+  LoginPage({super.key});
 
   @override
-  // ignore: library_private_types_in_public_api
   _LoginPageState createState() => _LoginPageState();
 }
 
@@ -19,7 +17,6 @@ class _LoginPageState extends State<LoginPage> {
   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _contrasenaController = TextEditingController();
   bool _obscureText = true;
-  final LocalAuthentication auth = LocalAuthentication();
 
   void _login() {
     // Inicializa los booleanos a false
@@ -27,10 +24,10 @@ class _LoginPageState extends State<LoginPage> {
     esProveedor = false;
 
     // Datos estáticos para el ejemplo
-     String clienteEmail = 'cliente';
-     String clientePassword = 'cliente123';
-     String proveedorEmail = 'proveedor';
-     String proveedorPassword = 'proveedor123';
+    String clienteEmail = 'cliente';
+    String clientePassword = 'cliente123';
+    String proveedorEmail = 'proveedor';
+    String proveedorPassword = 'proveedor123';
 
     if (_usuarioController.text == clienteEmail &&
         _contrasenaController.text == clientePassword) {
@@ -43,7 +40,7 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) =>  MyHomePage(title: 'Alquiler Autos')),
+            builder: (context) => MyHomePage(title: 'Alquiler Autos')),
       );
     } else if (_usuarioController.text == proveedorEmail &&
         _contrasenaController.text == proveedorPassword) {
@@ -56,35 +53,12 @@ class _LoginPageState extends State<LoginPage> {
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
-            builder: (context) =>  MyHomePage(title: 'Alquiler Autos')),
+            builder: (context) => MyHomePage(title: 'Alquiler Autos')),
       );
     } else {
       // Muestra un mensaje de error
       ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text('Usuario o contraseña incorrectos')),
-      );
-    }
-  }
-
-  Future<void> _authenticate() async {
-    try {
-      final bool didAuthenticate = await auth.authenticate(
-        localizedReason: 'Por favor autentícate para acceder',
-        options:  AuthenticationOptions(
-          biometricOnly: true,
-        ),
-      );
-
-      if (didAuthenticate) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) =>  MyHomePage(title: 'Alquiler Autos')),
-        );
-      }
-    } catch (e) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error de autenticación: $e')),
+        SnackBar(content: Text('Usuario o contraseña incorrectos')),
       );
     }
   }
@@ -103,14 +77,14 @@ class _LoginPageState extends State<LoginPage> {
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
               Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 40.0),
+                padding: EdgeInsets.symmetric(horizontal: 40.0),
                 child: Column(
                   children: <Widget>[
                     TextField(
                       controller: _usuarioController,
                       decoration: InputDecoration(
                         labelText: 'Email',
-                        prefixIcon:  Icon(Icons.email, color: Colors.black),
+                        prefixIcon: Icon(Icons.email, color: Colors.black),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.8),
                         border: OutlineInputBorder(
@@ -118,17 +92,15 @@ class _LoginPageState extends State<LoginPage> {
                         ),
                       ),
                     ),
-                     SizedBox(height: 20),
+                    SizedBox(height: 20),
                     TextField(
                       controller: _contrasenaController,
                       decoration: InputDecoration(
                         labelText: 'Password',
-                        prefixIcon:  Icon(Icons.lock, color: Colors.black),
+                        prefixIcon: Icon(Icons.lock, color: Colors.black),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText
-                                ? Icons.visibility
-                                : Icons.visibility_off,
+                            _obscureText ? Icons.visibility : Icons.visibility_off,
                             color: Colors.black,
                           ),
                           onPressed: () {
@@ -145,43 +117,43 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       obscureText: _obscureText,
                     ),
-                     SizedBox(height: 20),
+                    SizedBox(height: 20),
                     ElevatedButton(
                       onPressed: () {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) =>  RecuperarContrasena()),
+                              builder: (context) => RecuperarContrasena()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding:  EdgeInsets.symmetric(
+                        padding: EdgeInsets.symmetric(
                             horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
                       ),
-                      child:  Text(
+                      child: Text(
                         'Recuperar Contraseña',
                         style: TextStyle(color: Colors.white),
                       ),
                     ),
-                     SizedBox(height: 20),
+                    SizedBox(height: 20),
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: <Widget>[
                         ElevatedButton(
                           onPressed: _login,
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:  Color.fromARGB(255, 39, 218, 147),
-                            padding:  EdgeInsets.symmetric(
+                            backgroundColor: Color.fromARGB(255, 39, 218, 147),
+                            padding: EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          child:  Text(
+                          child: Text(
                             'Ingresar',
                             style: TextStyle(color: Colors.white),
                           ),
@@ -191,38 +163,23 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) =>
-                                       CreateAccountPage()),
+                                  builder: (context) => CreateAccountPage()),
                             );
                           },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor:  Color.fromARGB(255, 39, 218, 147),
-                            padding:  EdgeInsets.symmetric(
+                            backgroundColor: Color.fromARGB(255, 39, 218, 147),
+                            padding: EdgeInsets.symmetric(
                                 horizontal: 15, vertical: 15),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(30.0),
                             ),
                           ),
-                          child:  Text(
+                          child: Text(
                             'Crear Cuenta',
                             style: TextStyle(color: Colors.white),
                           ),
                         ),
                       ],
-                    ),
-                     SizedBox(height: 20),
-                    ElevatedButton.icon(
-                      onPressed: _authenticate,
-                      icon:  Icon(Icons.fingerprint),
-                      label:  Text('Huella'),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.blueAccent,
-                        padding:  EdgeInsets.symmetric(
-                            horizontal: 50, vertical: 15),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(30.0),
-                        ),
-                      ),
                     ),
                   ],
                 ),

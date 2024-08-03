@@ -33,7 +33,7 @@ Widget buildBackView(int index) {
 Widget _buildFeatureCard(IconData icon, String text, double iconSize, double textSize) {
   return Container(
     decoration: BoxDecoration(
-      color: Colors.white, // Fondo blanco para las tarjetas
+      //color: Colors.white, // Fondo blanco para las tarjetas
       borderRadius: BorderRadius.circular(10), // Bordes redondeados
     ),
     child: Column(

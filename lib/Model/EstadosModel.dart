@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-class ButtonVisibility with ChangeNotifier {
+class Estados with ChangeNotifier {
   bool _lupaVisible = false;
   bool _carritoVisible = false;
 

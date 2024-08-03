@@ -99,16 +99,16 @@ class CustomDrawer extends StatelessWidget {
               if (esCliente) ...[
             SwitchListTile(
               title:  Text('Mostrar Lupa'),
-              value: Provider.of<ButtonVisibility>(context).lupaVisible,
+              value: Provider.of<Estados>(context).lupaVisible,
               onChanged: (bool value) {
-                Provider.of<ButtonVisibility>(context, listen: false).toggleLupaVisibility();
+                Provider.of<Estados>(context, listen: false).toggleLupaVisibility();
               },
             ),
             SwitchListTile(
               title:  Text('Mostrar Carrito'),
-              value: Provider.of<ButtonVisibility>(context).carritoVisible,
+              value: Provider.of<Estados>(context).carritoVisible,
               onChanged: (bool value) {
-                Provider.of<ButtonVisibility>(context, listen: false).toggleCarritoVisibility();
+                Provider.of<Estados>(context, listen: false).toggleCarritoVisibility();
               },
             ),
           ],

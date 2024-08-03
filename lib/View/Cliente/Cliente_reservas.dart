@@ -1,4 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_share_me/flutter_share_me.dart';
+
+final String Saludos = "Saludos! me interesa el coche - nombre: -----------";
+final String message = 'Gracias';
+final double precio = 59.99; // Precio del alquiler por día
+final String phoneNumber = '593 96 224 0716'; // Número de WhatsApp en formato internacional (ejemplo: 1234567890)
 
 class ClienteReservas extends StatefulWidget {
   ClienteReservas({super.key});
@@ -13,11 +19,11 @@ class _ClienteReservasState extends State<ClienteReservas> {
   void loadReservas() async {
     await Future.delayed(Duration(seconds: 1));
     _reservas = [
-      Reserva(id: 1, title: "Reserva 1"),
-      Reserva(id: 2, title: "Reserva 2"),
-      Reserva(id: 3, title: "Reserva 3"),
-      Reserva(id: 4, title: "Reserva 4"),
-      Reserva(id: 5, title: "Reserva 5"),
+      Reserva(id: 1, title: "Carro 1"),
+      Reserva(id: 2, title: "Carro 2"),
+      Reserva(id: 3, title: "Carro 3"),
+      Reserva(id: 4, title: "Carro 4"),
+      Reserva(id: 5, title: "Carro 5"),
     ];
 
     if (mounted) {
@@ -38,35 +44,101 @@ class _ClienteReservasState extends State<ClienteReservas> {
   }
 
   void vistaModalReservasDetalles(Reserva reserva) {
-    showModalBottomSheet(
+    showDialog(
       context: context,
       builder: (BuildContext context) {
-        return Container(
-          padding: EdgeInsets.all(20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              Text(reserva.title, style: TextStyle(fontSize: 24, fontWeight: FontWeight.bold)),
-              SizedBox(height: 20),
-              Text('Detalles de la reserva', style: TextStyle(fontSize: 18)),
-              SizedBox(height: 20),
-              ElevatedButton(
-                child: Text('Cancelar Reserva',
-                                style: TextStyle(color: Colors.white),),
-                
+        return AlertDialog(
+          title: Row(
+            children: [
+              IconButton(
+                icon: Icon(Icons.arrow_back, color: Colors.grey),
                 onPressed: () {
-                  cancelarReserva(reserva.id); // Elimina la reserva de la lista
-                  Navigator.pop(context); // Cierra la ventana modal
+                  Navigator.of(context).pop(); // Cerrar el diálogo
                 },
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: Color.fromARGB(255, 242, 117, 8),
+              ),
+              SizedBox(width: 8),
+              Expanded(
+                child: Text(
+                  'Detalles Reserva ${reserva.id}',
+                  style: TextStyle(fontSize: 16),
+                  overflow: TextOverflow.ellipsis,
                 ),
               ),
             ],
           ),
+          content: SingleChildScrollView(
+            child: ListBody(
+              children: <Widget>[
+                Image.asset(
+                  'assets/images/car.png', // Asegúrate de tener esta imagen en tus assets
+                  fit: BoxFit.cover,
+                ),
+                SizedBox(height: 10),
+                Text('Estado: En espera'),
+                Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
+                Text('Duración: 3 días'), // Asumiendo una duración estática
+                Text('Auto: ${reserva.title}'),
+                SizedBox(height: 10),
+                Text('Estado: En espera'),
+                Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
+                Text('Duración: 3 días'), // Asumiendo una duración estática
+                Text('Auto: ${reserva.title}'),
+                SizedBox(height: 10),
+                Text('Estado: En espera'),
+                Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
+                Text('Duración: 3 días'), // Asumiendo una duración estática
+                Text('Auto: ${reserva.title}'),
+              ],
+            ),
+          ),
+          actions: <Widget>[
+            ElevatedButton(
+              onPressed: () {
+                _contactarPorWhatsApp();
+              },
+              child: Text(
+                'Contactar',
+                style: TextStyle(
+                  color: Colors.white, // Establece el color del texto aquí
+                ),
+              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 1, 46, 65)),
+            ),
+            ElevatedButton(
+              onPressed: () {
+                cancelarReserva(reserva.id);
+                Navigator.of(context).pop(); // Cerrar el diálogo
+              },
+              child: Text(
+                'Rechazar',
+                style: TextStyle(
+                  color: Colors.white, // Establece el color del texto aquí
+                ),
+              ),
+              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            ),
+          ],
         );
       },
     );
+  }
+
+  Future<void> _contactarPorWhatsApp() async {
+    try {
+      String? response = await FlutterShareMe().shareWhatsAppPersonalMessage(
+        message: '$message $Saludos Alquiler: \$$precio',
+        phoneNumber: phoneNumber,
+      );
+      if (response == 'success') {
+        print('Mensaje enviado correctamente');
+      } else {
+        print('Error al enviar mensaje: $response');
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo abrir WhatsApp: $e')),
+      );
+    }
   }
 
   @override
@@ -107,9 +179,12 @@ class _ClienteReservasState extends State<ClienteReservas> {
                       child: Column(
                         mainAxisAlignment: MainAxisAlignment.center,
                         children: [
-                          Icon(Icons.calendar_today, size: 40, color: Theme.of(context).primaryColor),
+                          Icon(Icons.calendar_today,
+                              size: 40, color: Theme.of(context).primaryColor),
                           SizedBox(height: 10),
-                          Text(reserva.title, style: TextStyle(fontSize: 18, color: Colors.black), textAlign: TextAlign.center),
+                          Text(reserva.title,
+                              style: TextStyle(fontSize: 18, color: Colors.black),
+                              textAlign: TextAlign.center),
                         ],
                       ),
                     ),

@@ -8,11 +8,12 @@ import 'package:autos/View/Login/login.dart';
 import 'package:autos/View/Proveedor/Proveedor_CRUD.dart';
 import 'package:autos/View/Proveedor/Proveedor_VerReservas.dart';
 import 'package:provider/provider.dart';
+
 void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => ButtonVisibility()),
+        ChangeNotifierProvider(create: (_) => Estados()),
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(AppThemes.lightTheme),
         ),
