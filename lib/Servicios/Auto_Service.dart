@@ -1,41 +1,32 @@
 import 'package:autos/Model/AutoModel.dart';
-import 'package:flutter/material.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
 
-class AutoController with ChangeNotifier {
+
+Future <List> getAuto() async{
   List<Auto> _autos = [
-    Auto(id: 0, marca: 'Beat', empresa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 10000, imagePath: 'assets/images/auto_0.jpg'),
-    Auto(id: 1, marca: 'Kwid', empresa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 11000, imagePath: 'assets/images/auto_1.jpg'),
-    // Añadir más autos según sea necesario
+    Auto(id: 0, marca: 'Beat', empresa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 10000, imagePath: 'assets/images/buggati.jpg'),
+    Auto(id: 1, marca: 'Kwid', empresa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 11800, imagePath: 'assets/images/buggati.jpg'),
+    Auto(id: 2, marca: 'Beat', empresa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 7000, imagePath: 'assets/images/buggati.jpg'),
+    Auto(id: 3, marca: 'Kwid', empresa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 15000, imagePath: 'assets/images/buggati.jpg'),
+    Auto(id: 4, marca: 'Beat', empresa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 15000, imagePath: 'assets/images/buggati.jpg'),
+    Auto(id: 5, marca: 'Kwid', empresa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 11050, imagePath: 'assets/images/buggati.jpg'),
+    
   ];
+  return _autos;
+}
 
-  List<Auto> get autos => _autos;
+Future<void> guardarAuto(String marca, String empresa, String descripcion, String caracteristicas, String precio, String image) async {
+  
+  print("Guardado exitosamente");
+}
 
-  void addAuto(Auto auto) {
-    _autos.add(auto);
-    notifyListeners();
-  }
+Future<void> editarAuto(int id, String marca, String empresa, String descripcion, String caracteristicas, String precio, String? imagePath) async {
+  
+  print("Auto actualizado exitosamente");
+  print("ID: $id");
+}
 
-  void updateAuto(int id, Auto updatedAuto) {
-    int index = _autos.indexWhere((auto) => auto.id == id);
-    if (index != -1) {
-      _autos[index] = updatedAuto;
-      notifyListeners();
-    }
-  }
 
-  void deleteAuto(int id) {
-    _autos.removeWhere((auto) => auto.id == id);
-    notifyListeners();
-  }
-
-  Future<File?> pickImage() async {
-    final ImagePicker _picker = ImagePicker();
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      return File(pickedFile.path);
-    }
-    return null;
-  }
+Future<void> eliminarAuto(int id) async {
+  
+  print("Eliminado exitosamente");
 }
