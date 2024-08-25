@@ -107,7 +107,7 @@ class AutoDetailScreen extends StatelessWidget {
             const SizedBox(height: 10),
             Text('Marca: ${auto.marca}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
-            Text('Empresa: ${auto.empresa}'),
+            Text('Placa: ${auto.placa}'),
             const SizedBox(height: 5),
             Text('Descripción: ${auto.descripcion}'),
             const SizedBox(height: 5),

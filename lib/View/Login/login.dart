@@ -1,3 +1,5 @@
+import 'package:autos/Model/loginModel.dart';
+import 'package:autos/Servicios/loginService.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/main.dart';
 import 'package:autos/View/Login/create_account.dart';
@@ -14,42 +16,30 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-  final TextEditingController _usuarioController = TextEditingController();
+   final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _contrasenaController = TextEditingController();
+  final LoginService _loginService = LoginService();
   bool _obscureText = true;
 
-  void _login() {
-    // Inicializa los booleanos a false
+  void _login() async {
+    // Restablecer los booleanos antes de la autenticación
     esCliente = false;
     esProveedor = false;
 
-    // Datos estáticos para el ejemplo
-    String clienteEmail = 'cliente';
-    String clientePassword = 'cliente123';
-    String proveedorEmail = 'proveedor';
-    String proveedorPassword = 'proveedor123';
+    // Autenticar el usuario
+    LoginModel? user = await _loginService.login(
+      context,
+      _usuarioController.text,
+      _contrasenaController.text,
+    );
 
-    if (_usuarioController.text == clienteEmail &&
-        _contrasenaController.text == clientePassword) {
+    if (user != null) {
       setState(() {
-        esCliente = true;
-        esProveedor = false;
+        esCliente = user.esCliente;
+        esProveedor = user.esProveedor;
       });
       print(
-          'Cliente logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MyHomePage(title: 'Alquiler Autos')),
-      );
-    } else if (_usuarioController.text == proveedorEmail &&
-        _contrasenaController.text == proveedorPassword) {
-      setState(() {
-        esProveedor = true;
-        esCliente = false;
-      });
-      print(
-          'Proveedor logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
+          'Usuario logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(
@@ -83,7 +73,7 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: _usuarioController,
                       decoration: InputDecoration(
-                        labelText: 'Email',
+                        labelText: 'Usuario',
                         prefixIcon: Icon(Icons.email, color: Colors.black),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.8),

@@ -95,10 +95,10 @@ class _AgregarAutoState extends State<AgregarAuto> {
               const SizedBox(height: 10),
               TextFormField(
                 controller: empresacontroller,
-                decoration: const InputDecoration(labelText: 'Empresa'),
+                decoration: const InputDecoration(labelText: 'Placa'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese la empresa';
+                    return 'Por favor ingrese la Placa';
                   }
                   return null;
                 },

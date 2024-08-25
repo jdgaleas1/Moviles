@@ -20,7 +20,7 @@ class _EditarAutoState extends State<EditarAuto> {
   File? _imageFile;
 
   TextEditingController marcaController = TextEditingController();
-  TextEditingController empresaController = TextEditingController();
+  TextEditingController placaController = TextEditingController();
   TextEditingController descripcionController = TextEditingController();
   TextEditingController caracteristicaController = TextEditingController();
   TextEditingController precioController = TextEditingController();
@@ -29,7 +29,7 @@ class _EditarAutoState extends State<EditarAuto> {
   void initState() {
     super.initState();
     marcaController.text = widget.auto.marca;
-    empresaController.text = widget.auto.empresa;
+    placaController.text = widget.auto.placa;
     descripcionController.text = widget.auto.descripcion;
     caracteristicaController.text = widget.auto.caracteristicas;
     precioController.text = widget.auto.precio.toString();
@@ -63,8 +63,8 @@ class _EditarAutoState extends State<EditarAuto> {
               ),
               const SizedBox(height: 10),
               TextField(
-                controller: empresaController,
-                decoration: const InputDecoration(labelText: 'Empresa'),
+                controller: placaController,
+                decoration: const InputDecoration(labelText: 'placa'),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -108,7 +108,7 @@ class _EditarAutoState extends State<EditarAuto> {
                       await editarAuto(
                         widget.auto.id, 
                         marcaController.text,
-                        empresaController.text,
+                        placaController.text,
                         descripcionController.text,
                         caracteristicaController.text,
                         precioController.text,

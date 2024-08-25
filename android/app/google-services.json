@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "955122523159",
+    "project_id": "moviles-30e5d",
+    "storage_bucket": "moviles-30e5d.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:955122523159:android:ebdcc39581cb99f8ac5052",
+        "android_client_info": {
+          "package_name": "com.example.autos"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1IUvzCv_BuUOcc6ftqQDIL_livZqt40A"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

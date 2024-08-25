@@ -9,7 +9,15 @@ import 'package:autos/View/Proveedor/Proveedor_CRUD.dart';
 import 'package:autos/View/Proveedor/Proveedor_VerReservas.dart';
 import 'package:provider/provider.dart';
 
-void main() {
+import 'package:firebase_core/firebase_core.dart';
+import 'package:autos/firebase_options.dart';
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   runApp(
     MultiProvider(
       providers: [
@@ -17,6 +25,7 @@ void main() {
         ChangeNotifierProvider(
           create: (_) => ThemeProvider(AppThemes.lightTheme),
         ),
+        ChangeNotifierProvider(create: (_) => UserProvider()),
       ],
       child:  MyApp(),
     ),
@@ -125,6 +134,7 @@ class _MyHomePageState extends State<MyHomePage> {
         onItemTapped: _onItemTapped,
         onLogout: () => _cerrarSesion(context),
         esCliente: esCliente,
+
       ),
     );
   }

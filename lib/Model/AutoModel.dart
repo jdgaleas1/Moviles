@@ -1,7 +1,7 @@
 class Auto {
   int id;
   String marca;
-  String empresa;
+  String placa;
   String descripcion;
   String caracteristicas;
   double precio;
@@ -10,7 +10,7 @@ class Auto {
   Auto({
     required this.id,
     required this.marca,
-    required this.empresa,
+    required this.placa,
     required this.descripcion,
     required this.caracteristicas,
     required this.precio,
