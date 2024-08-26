@@ -18,6 +18,8 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController descripcioncontroller = TextEditingController(text: "");
   TextEditingController caracteristicacontroller = TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
+  TextEditingController ciudadcontroller = TextEditingController(text: ""); // Nuevo controlador para ciudad
+  TextEditingController provinciacontroller = TextEditingController(text: ""); // Nuevo controlador para provincia
   File? _imageFile;
 
   _selectImage(ImageSource source) async {
@@ -30,28 +32,35 @@ class _AgregarAutoState extends State<AgregarAuto> {
     }
   }
 
-  _guardarAuto() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageFile != null) {
-        // Llama a la función guardarAuto aquí
+ _guardarAuto() async {
+  if (_formKey.currentState!.validate()) {
+    if (_imageFile != null) {
+      try {
         await guardarAuto(
           marcacontroller.text,
           empresacontroller.text,
           descripcioncontroller.text,
           caracteristicacontroller.text,
           preciocontroller.text,
-          _imageFile!.path, // Asegúrate de pasar la ruta de la imagen
-        ).then((_) {
-          Navigator.pop(context);
-        });
-      } else {
-        // Muestra un mensaje de error si la imagen no está seleccionada
+          _imageFile!.path,
+          ciudadcontroller.text,
+          provinciacontroller.text,
+        );
+        Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
+      } catch (e) {
+        // Muestra un mensaje de error si ocurre un problema
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Por favor seleccione una imagen')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
+    } else {
+      // Muestra un mensaje de error si la imagen no está seleccionada
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor seleccione una imagen')),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -136,6 +145,28 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   return null;
                 },
               ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: provinciacontroller, 
+                decoration: const InputDecoration(labelText: 'Provincia'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la provincia';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: ciudadcontroller, 
+                decoration: const InputDecoration(labelText: 'Ciudad'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la ciudad';
+                  }
+                  return null;
+                },
+              ),
               const SizedBox(height: 20),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,7 +177,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true); // Devuelve true si se agregó un auto.;
                     },
                     child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

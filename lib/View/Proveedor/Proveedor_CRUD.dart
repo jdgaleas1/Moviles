@@ -14,6 +14,10 @@ class Proveedor extends StatefulWidget {
 }
 
 class _ProveedorState extends State<Proveedor> {
+  Future<void> _refreshAutos() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,65 +25,80 @@ class _ProveedorState extends State<Proveedor> {
         title: const Text('CRUD Autos'),
       ),
       body: FutureBuilder(
-        future: getAuto(), 
+        future: getAuto(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           } else {
             List autos = snapshot.data!;
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Número de columnas en la cuadrícula
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                childAspectRatio: 1,
-              ),
-              itemCount: autos.length, // Número de autos en la lista
-              itemBuilder: (context, index) {
-                Auto auto = autos[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AutoDetailScreen(auto: auto),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    margin: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Image.asset(
-                            auto.imagePath,
-                            fit: BoxFit.cover,
+            return RefreshIndicator(
+              onRefresh: _refreshAutos,
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2,
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                  childAspectRatio: 1,
+                ),
+                itemCount: autos.length,
+                itemBuilder: (context, index) {
+                  Auto auto = autos[index];
+                  return GestureDetector(
+                    onTap: () async {
+                      bool? result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AutoDetailScreen(auto: auto),
+                        ),
+                      );
+                      if (result == true) {
+                        _refreshAutos();
+                      }
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Image.file(
+                              File(auto.imagePath),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/buggati.jpg',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(auto.marca, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(auto.marca, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          bool? result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AgregarAuto()),
           );
+          if (result == true) {
+            _refreshAutos();
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -89,7 +108,7 @@ class _ProveedorState extends State<Proveedor> {
 
 class AutoDetailScreen extends StatelessWidget {
   final Auto auto;
-  
+
   const AutoDetailScreen({required this.auto});
 
   @override
@@ -103,7 +122,20 @@ class AutoDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(auto.imagePath, width: double.infinity, height: 200, fit: BoxFit.cover),
+            Image.file(
+              File(auto.imagePath),
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/images/buggati.jpg',
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
             const SizedBox(height: 10),
             Text('Marca: ${auto.marca}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
@@ -114,17 +146,24 @@ class AutoDetailScreen extends StatelessWidget {
             Text('Características: ${auto.caracteristicas}'),
             const SizedBox(height: 5),
             Text('Precio: \$${auto.precio}'),
+            const SizedBox(height: 5),
+            Text('Ciudad: ${auto.ciudad}'), // Nueva línea para mostrar la ciudad
+            const SizedBox(height: 5),
+            Text('Provincia: ${auto.provincia}'), // Nueva línea para mostrar la provincia
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
               children: [
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    bool? result = await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => EditarAuto(auto: auto)),
                     );
+                    if (result == true) {
+                      Navigator.pop(context, true); // Notifica que se editó un auto.
+                    }
                   },
                 ),
                 IconButton(
@@ -135,31 +174,30 @@ class AutoDetailScreen extends StatelessWidget {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text("Confirmar eliminación"),
-                          content: const Text(
-                              "¿Estás seguro de que deseas eliminar este auto?"),
+                          content: const Text("¿Estás seguro de que deseas eliminar este auto?"),
                           actions: [
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context)
-                                    .pop(); 
+                                Navigator.of(context).pop(); 
                               },
                               child: const Text("Cancelar"),
                             ),
                             TextButton(
                               onPressed: () async {
-                                await eliminarAuto(auto.id).then((_){
-                        Navigator.pop(context);
-                      });
-                                //print("Auto eliminado");
-                                Navigator.of(context)
-                                    .pop(); 
+                                await eliminarAuto(auto.id).then((_) {
+                                  Navigator.pop(context, true); // Notifica que se eliminó un auto.
+                                });
                               },
                               child: const Text("Eliminar"),
                             ),
                           ],
                         );
                       },
-                    );
+                    ).then((result) {
+                      if (result == true) {
+                        Navigator.pop(context, true); // Notifica que se eliminó un auto.
+                      }
+                    });
                   },
                 ),
               ],
@@ -170,6 +208,3 @@ class AutoDetailScreen extends StatelessWidget {
     );
   }
 }
-
-
-

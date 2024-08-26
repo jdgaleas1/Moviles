@@ -24,6 +24,8 @@ class _EditarAutoState extends State<EditarAuto> {
   TextEditingController descripcionController = TextEditingController();
   TextEditingController caracteristicaController = TextEditingController();
   TextEditingController precioController = TextEditingController();
+  TextEditingController ciudadController = TextEditingController(); // Nuevo controlador para ciudad
+  TextEditingController provinciaController = TextEditingController(); // Nuevo controlador para provincia
 
   @override
   void initState() {
@@ -33,6 +35,8 @@ class _EditarAutoState extends State<EditarAuto> {
     descripcionController.text = widget.auto.descripcion;
     caracteristicaController.text = widget.auto.caracteristicas;
     precioController.text = widget.auto.precio.toString();
+    ciudadController.text = widget.auto.ciudad; // Inicializa el campo de ciudad
+    provinciaController.text = widget.auto.provincia; // Inicializa el campo de provincia
   }
 
   _selectImage(ImageSource source) async {
@@ -57,6 +61,33 @@ class _EditarAutoState extends State<EditarAuto> {
           key: _formKey,
           child: ListView(
             children: [
+              // Verificación de la imagen seleccionada
+              _imageFile != null 
+                ? Image.file(
+                    _imageFile!,
+                    height: 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/buggati.jpg',
+                        height: 200,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  )
+                : Image.asset(
+                    widget.auto.imagePath,
+                    height: 200,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Image.asset(
+                        'assets/images/buggati.jpg',
+                        height: 200,
+                        fit: BoxFit.cover,
+                      );
+                    },
+                  ),
+              const SizedBox(height: 20),
               TextField(
                 controller: marcaController,
                 decoration: const InputDecoration(labelText: 'Marca del Auto'),
@@ -64,7 +95,7 @@ class _EditarAutoState extends State<EditarAuto> {
               const SizedBox(height: 10),
               TextField(
                 controller: placaController,
-                decoration: const InputDecoration(labelText: 'placa'),
+                decoration: const InputDecoration(labelText: 'Placa'),
               ),
               const SizedBox(height: 10),
               TextField(
@@ -81,10 +112,17 @@ class _EditarAutoState extends State<EditarAuto> {
                 controller: precioController,
                 decoration: const InputDecoration(labelText: 'Precio'),
               ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: provinciaController, 
+                decoration: const InputDecoration(labelText: 'Provincia'),
+              ),
+              const SizedBox(height: 10),
+              TextField(
+                controller: ciudadController, 
+                decoration: const InputDecoration(labelText: 'Ciudad'),
+              ),
               const SizedBox(height: 20),
-              _imageFile == null
-                  ? Image.asset(widget.auto.imagePath, height: 200)
-                  : Image.file(_imageFile!, height: 200),
               Row(
                 children: [
                   ElevatedButton(
@@ -112,16 +150,18 @@ class _EditarAutoState extends State<EditarAuto> {
                         descripcionController.text,
                         caracteristicaController.text,
                         precioController.text,
-                        _imageFile?.path, 
+                        _imageFile?.path,
+                        ciudadController.text, 
+                        provinciaController.text, 
                       ).then((_){
-                        Navigator.pop(context);
+                        Navigator.pop(context, true);
                       });
                     },
                     child: const Text('Guardar'),
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true); // Devuelve true si se editó un auto.
                     },
                     child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
