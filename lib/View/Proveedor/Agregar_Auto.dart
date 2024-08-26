@@ -16,10 +16,8 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController marcacontroller = TextEditingController(text: "");
   TextEditingController empresacontroller = TextEditingController(text: "");
   TextEditingController descripcioncontroller = TextEditingController(text: "");
-  TextEditingController caracteristicacontroller =
-      TextEditingController(text: "");
+  TextEditingController caracteristicacontroller = TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
-
   TextEditingController ciudadcontroller = TextEditingController(text: ""); 
   TextEditingController provinciacontroller = TextEditingController(text: ""); 
   Uint8List? _imageBytes;  // Almacenar los bytes de la imagen
@@ -63,17 +61,13 @@ class _AgregarAutoState extends State<AgregarAuto> {
       } else {
         // Muestra un mensaje de error si la imagen no está seleccionada
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error')),
+
+          const SnackBar(content: Text('Por favor seleccione una imagen')),
+
         );
       }
-    } else {
-      // Muestra un mensaje de error si la imagen no está seleccionada
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor seleccione una imagen')),
-      );
-    }
+    } 
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -190,13 +184,11 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, true); 
-
+                      Navigator.pop(context, true); // Devuelve true si se agregó un auto.
                     },
                     child: const Text('Cancelar',
                         style: TextStyle(color: Colors.white)),
-                    style:
-                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   ),
                 ],
               ),
