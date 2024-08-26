@@ -3,8 +3,8 @@ import 'package:autos/View/Proveedor/Editar_Auto.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
-import 'package:image_picker/image_picker.dart';
-import 'dart:io';
+import 'dart:convert';
+import 'dart:typed_data';
 
 class Proveedor extends StatefulWidget {
   const Proveedor({super.key});
@@ -47,6 +47,10 @@ class _ProveedorState extends State<Proveedor> {
                 itemCount: autos.length,
                 itemBuilder: (context, index) {
                   Auto auto = autos[index];
+
+                  // Decodificar la imagen de base64 a bytes
+                  Uint8List imageBytes = base64Decode(auto.imageBase64);
+
                   return GestureDetector(
                     onTap: () async {
                       bool? result = await Navigator.push(
@@ -65,13 +69,12 @@ class _ProveedorState extends State<Proveedor> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Expanded(
-                            child: Image.file(
-                              File(auto.imagePath),
+                            child: Image.memory(
+                              imageBytes,
                               fit: BoxFit.cover,
                               errorBuilder: (context, error, stackTrace) {
-                                return Image.asset(
-                                  'assets/images/buggati.jpg',
-                                  fit: BoxFit.cover,
+                                return const Center(
+                                  child: Text('Error al cargar la imagen'),
                                 );
                               },
                             ),
@@ -113,6 +116,8 @@ class AutoDetailScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    Uint8List imageBytes = base64Decode(auto.imageBase64);
+
     return Scaffold(
       appBar: AppBar(
         title: Text('Detalle del ${auto.marca}'),
@@ -122,18 +127,13 @@ class AutoDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.file(
-              File(auto.imagePath),
+            Image.memory(
+              imageBytes,
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
               errorBuilder: (context, error, stackTrace) {
-                return Image.asset(
-                  'assets/images/buggati.jpg',
-                  width: double.infinity,
-                  height: 200,
-                  fit: BoxFit.cover,
-                );
+                return const Center(child: Text('Error al cargar la imagen'));
               },
             ),
             const SizedBox(height: 10),
@@ -147,9 +147,9 @@ class AutoDetailScreen extends StatelessWidget {
             const SizedBox(height: 5),
             Text('Precio: \$${auto.precio}'),
             const SizedBox(height: 5),
-            Text('Ciudad: ${auto.ciudad}'), // Nueva línea para mostrar la ciudad
+            Text('Ciudad: ${auto.ciudad}'),
             const SizedBox(height: 5),
-            Text('Provincia: ${auto.provincia}'), // Nueva línea para mostrar la provincia
+            Text('Provincia: ${auto.provincia}'),
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -162,7 +162,7 @@ class AutoDetailScreen extends StatelessWidget {
                       MaterialPageRoute(builder: (context) => EditarAuto(auto: auto)),
                     );
                     if (result == true) {
-                      Navigator.pop(context, true); // Notifica que se editó un auto.
+                      Navigator.pop(context, true);
                     }
                   },
                 ),
@@ -185,7 +185,7 @@ class AutoDetailScreen extends StatelessWidget {
                             TextButton(
                               onPressed: () async {
                                 await eliminarAuto(auto.id).then((_) {
-                                  Navigator.pop(context, true); // Notifica que se eliminó un auto.
+                                  Navigator.pop(context, true);
                                 });
                               },
                               child: const Text("Eliminar"),
@@ -195,7 +195,7 @@ class AutoDetailScreen extends StatelessWidget {
                       },
                     ).then((result) {
                       if (result == true) {
-                        Navigator.pop(context, true); // Notifica que se eliminó un auto.
+                        Navigator.pop(context, true);
                       }
                     });
                   },

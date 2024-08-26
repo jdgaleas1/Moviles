@@ -5,7 +5,7 @@ class Auto {
   String descripcion;
   String caracteristicas;
   double precio;
-  String imagePath;
+  String imageBase64;
   String ciudad;
   String provincia;
 
@@ -16,7 +16,7 @@ class Auto {
     required this.descripcion,
     required this.caracteristicas,
     required this.precio,
-    required this.imagePath,
+    required this.imageBase64,
     required this.ciudad,
     required this.provincia,
   });
@@ -30,7 +30,7 @@ class Auto {
       descripcion: data['descripcion'] ?? '',
       caracteristicas: data['caracteristicas'] ?? '',
       precio: double.tryParse(data['precio'].toString()) ?? 0.0, 
-      imagePath: data['imagePath'] ?? '',
+      imageBase64: data['imagePath'] ?? '',
       ciudad: data['ciudad'] ?? '',
       provincia: data['provincia'] ?? '',
     );

@@ -1,5 +1,5 @@
-import 'dart:io';
-
+import 'dart:convert';
+import 'dart:typed_data';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
@@ -18,49 +18,55 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController descripcioncontroller = TextEditingController(text: "");
   TextEditingController caracteristicacontroller = TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
-  TextEditingController ciudadcontroller = TextEditingController(text: ""); // Nuevo controlador para ciudad
-  TextEditingController provinciacontroller = TextEditingController(text: ""); // Nuevo controlador para provincia
-  File? _imageFile;
+  TextEditingController ciudadcontroller = TextEditingController(text: ""); 
+  TextEditingController provinciacontroller = TextEditingController(text: ""); 
+  Uint8List? _imageBytes;  // Almacenar los bytes de la imagen
 
+  // Función para seleccionar la imagen
   _selectImage(ImageSource source) async {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: source);
     if (image != null) {
-      setState(() {
-        _imageFile = File(image.path);
-      });
+      // Leer los bytes de la imagen
+      _imageBytes = await image.readAsBytes();
+      setState(() {}); // Actualizar el estado después de que la imagen se haya leído
     }
   }
 
- _guardarAuto() async {
-  if (_formKey.currentState!.validate()) {
-    if (_imageFile != null) {
-      try {
-        await guardarAuto(
-          marcacontroller.text,
-          empresacontroller.text,
-          descripcioncontroller.text,
-          caracteristicacontroller.text,
-          preciocontroller.text,
-          _imageFile!.path,
-          ciudadcontroller.text,
-          provinciacontroller.text,
-        );
-        Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
-      } catch (e) {
-        // Muestra un mensaje de error si ocurre un problema
+  // Función para guardar el auto con la imagen
+  _guardarAuto() async {
+    if (_formKey.currentState!.validate()) {
+      if (_imageBytes != null) {
+        try {
+          // Convertir los bytes de la imagen a una cadena base64
+          String base64Image = base64Encode(_imageBytes!);
+
+          // Llamar al método que guarda el auto con la imagen en base64
+          await guardarAuto(
+            marcacontroller.text,
+            empresacontroller.text,
+            descripcioncontroller.text,
+            caracteristicacontroller.text,
+            preciocontroller.text,
+            base64Image, // Pasar la imagen en base64
+            ciudadcontroller.text,
+            provinciacontroller.text,
+          );
+          Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
+        } catch (e) {
+          // Muestra un mensaje de error si ocurre un problema
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      } else {
+        // Muestra un mensaje de error si la imagen no está seleccionada
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          const SnackBar(content: Text('Por favor seleccione una imagen')),
         );
       }
-    } else {
-      // Muestra un mensaje de error si la imagen no está seleccionada
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor seleccione una imagen')),
-      );
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -74,9 +80,9 @@ class _AgregarAutoState extends State<AgregarAuto> {
           key: _formKey,
           child: ListView(
             children: [
-              _imageFile == null
+              _imageBytes == null
                   ? const Text('No se ha seleccionado una imagen.')
-                  : Image.file(_imageFile!, height: 200),
+                  : Image.memory(_imageBytes!, height: 200),  // Mostrar la imagen a partir de bytes
               Row(
                 children: [
                   ElevatedButton(
@@ -177,7 +183,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, true); // Devuelve true si se agregó un auto.;
+                      Navigator.pop(context, true); 
                     },
                     child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
