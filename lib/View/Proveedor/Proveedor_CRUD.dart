@@ -28,33 +28,36 @@ class _ProveedorState extends State<Proveedor> {
         future: getAuto(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
+            return const Center(child: CircularProgressIndicator());
           } else if (snapshot.hasError) {
             return Center(child: Text('Error: ${snapshot.error}'));
           } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text('No data available'));
+            return const Center(child: Text('No data available'));
           } else {
             List autos = snapshot.data!;
             return RefreshIndicator(
-              onRefresh: _refreshAutos,  // Llamado cuando se desliza hacia abajo
+              onRefresh: _refreshAutos,
               child: GridView.builder(
                 gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                  crossAxisCount: 2, // Número de columnas en la cuadrícula
+                  crossAxisCount: 2,
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
                   childAspectRatio: 1,
                 ),
-                itemCount: autos.length, // Número de autos en la lista
+                itemCount: autos.length,
                 itemBuilder: (context, index) {
                   Auto auto = autos[index];
                   return GestureDetector(
-                    onTap: () {
-                      Navigator.push(
+                    onTap: () async {
+                      bool? result = await Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => AutoDetailScreen(auto: auto),
                         ),
                       );
+                      if (result == true) {
+                        _refreshAutos();
+                      }
                     },
                     child: Card(
                       margin: const EdgeInsets.all(10),
@@ -88,11 +91,14 @@ class _ProveedorState extends State<Proveedor> {
         },
       ),
       floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.push(
+        onPressed: () async {
+          bool? result = await Navigator.push(
             context,
             MaterialPageRoute(builder: (context) => const AgregarAuto()),
           );
+          if (result == true) {
+            _refreshAutos();
+          }
         },
         child: const Icon(Icons.add),
       ),
@@ -150,11 +156,14 @@ class AutoDetailScreen extends StatelessWidget {
               children: [
                 IconButton(
                   icon: const Icon(Icons.edit),
-                  onPressed: () {
-                    Navigator.push(
+                  onPressed: () async {
+                    bool? result = await Navigator.push(
                       context,
                       MaterialPageRoute(builder: (context) => EditarAuto(auto: auto)),
                     );
+                    if (result == true) {
+                      Navigator.pop(context, true); // Notifica que se editó un auto.
+                    }
                   },
                 ),
                 IconButton(
@@ -165,8 +174,7 @@ class AutoDetailScreen extends StatelessWidget {
                       builder: (BuildContext context) {
                         return AlertDialog(
                           title: const Text("Confirmar eliminación"),
-                          content: const Text(
-                              "¿Estás seguro de que deseas eliminar este auto?"),
+                          content: const Text("¿Estás seguro de que deseas eliminar este auto?"),
                           actions: [
                             TextButton(
                               onPressed: () {
@@ -176,17 +184,20 @@ class AutoDetailScreen extends StatelessWidget {
                             ),
                             TextButton(
                               onPressed: () async {
-                                await eliminarAuto(auto.id).then((_){
-                                  Navigator.pop(context);
+                                await eliminarAuto(auto.id).then((_) {
+                                  Navigator.pop(context, true); // Notifica que se eliminó un auto.
                                 });
-                                Navigator.of(context).pop();
                               },
                               child: const Text("Eliminar"),
                             ),
                           ],
                         );
                       },
-                    );
+                    ).then((result) {
+                      if (result == true) {
+                        Navigator.pop(context, true); // Notifica que se eliminó un auto.
+                      }
+                    });
                   },
                 ),
               ],

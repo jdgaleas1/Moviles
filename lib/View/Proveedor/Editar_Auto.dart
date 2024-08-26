@@ -161,7 +161,7 @@ class _EditarAutoState extends State<EditarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true); // Devuelve true si se editó un auto.
                     },
                     child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),

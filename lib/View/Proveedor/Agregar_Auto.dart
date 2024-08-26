@@ -32,10 +32,10 @@ class _AgregarAutoState extends State<AgregarAuto> {
     }
   }
 
-  _guardarAuto() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageFile != null) {
-        // Llama a la función guardarAuto aquí con los nuevos campos
+ _guardarAuto() async {
+  if (_formKey.currentState!.validate()) {
+    if (_imageFile != null) {
+      try {
         await guardarAuto(
           marcacontroller.text,
           empresacontroller.text,
@@ -43,19 +43,24 @@ class _AgregarAutoState extends State<AgregarAuto> {
           caracteristicacontroller.text,
           preciocontroller.text,
           _imageFile!.path,
-          ciudadcontroller.text, // Pasar el valor de la ciudad
-          provinciacontroller.text, // Pasar el valor de la provincia
-        ).then((_) {
-          Navigator.pop(context);
-        });
-      } else {
-        // Muestra un mensaje de error si la imagen no está seleccionada
+          ciudadcontroller.text,
+          provinciacontroller.text,
+        );
+        Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
+      } catch (e) {
+        // Muestra un mensaje de error si ocurre un problema
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor seleccione una imagen')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
+    } else {
+      // Muestra un mensaje de error si la imagen no está seleccionada
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor seleccione una imagen')),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -172,7 +177,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context);
+                      Navigator.pop(context, true); // Devuelve true si se agregó un auto.;
                     },
                     child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
