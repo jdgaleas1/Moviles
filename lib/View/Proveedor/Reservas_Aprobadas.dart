@@ -4,6 +4,7 @@ import 'package:autos/Servicios/Reservas_Service.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/Model/AutoModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert'; // Import necesario para base64Decode
 
 class ReservasView extends StatefulWidget {
   const ReservasView({Key? key}) : super(key: key);
@@ -70,13 +71,16 @@ class _ReservasViewState extends State<ReservasView> {
                         Expanded(
                           child: selectedAuto != null &&
                                   selectedReserva == reserva
-                              ? Image.network(
-                                  selectedAuto!.imagePath, // Imagen del auto
-                                  fit: BoxFit.cover,
-                                  errorBuilder: (context, error, stackTrace) {
-                                    return const Icon(Icons.error);
-                                  },
-                                )
+                              ? selectedAuto!.imageBase64.isNotEmpty
+                                  ? Image.memory(
+                                      base64Decode(
+                                          selectedAuto!.imageBase64),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/buggati.jpg', // Imagen por defecto
+                                      fit: BoxFit.cover,
+                                    )
                               : Container(), // Contenedor vacío para la imagen mientras se carga
                         ),
                         Padding(
@@ -105,7 +109,7 @@ class _ReservasViewState extends State<ReservasView> {
                 children: [
                   const Divider(),
                   Text('Detalles de la Reserva:',
-                      style: Theme.of(context).textTheme.headline6),
+                      style: Theme.of(context).textTheme.titleLarge),
                   const SizedBox(height: 10),
                   Text('Marca: ${selectedAuto!.marca}'),
                   Text('Placa: ${selectedAuto!.placa}'),

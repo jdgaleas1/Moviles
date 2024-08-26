@@ -19,9 +19,15 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController caracteristicacontroller =
       TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
+<<<<<<< HEAD
   TextEditingController ciudadcontroller = TextEditingController(text: ""); // Nuevo controlador para ciudad
   TextEditingController provinciacontroller = TextEditingController(text: ""); // Nuevo controlador para provincia
   File? _imageFile;
+=======
+  TextEditingController ciudadcontroller = TextEditingController(text: ""); 
+  TextEditingController provinciacontroller = TextEditingController(text: ""); 
+  Uint8List? _imageBytes;  // Almacenar los bytes de la imagen
+>>>>>>> 307d953fee6a96a3440eebd0bf7996ae57b5d5a5
 
   _selectImage(ImageSource source) async {
     ImagePicker picker = ImagePicker();
@@ -33,6 +39,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
     }
   }
 
+<<<<<<< HEAD
  _guardarAuto() async {
   if (_formKey.currentState!.validate()) {
     if (_imageFile != null) {
@@ -50,6 +57,36 @@ class _AgregarAutoState extends State<AgregarAuto> {
         Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
       } catch (e) {
         // Muestra un mensaje de error si ocurre un problema
+=======
+  // Función para guardar el auto con la imagen
+  _guardarAuto() async {
+    if (_formKey.currentState!.validate()) {
+      if (_imageBytes != null) {
+        try {
+          // Convertir los bytes de la imagen a una cadena base64
+          String base64Image = base64Encode(_imageBytes!);
+
+          // Llamar al método que guarda el auto con la imagen en base64
+          await guardarAuto(
+            marcacontroller.text,
+            empresacontroller.text,
+            descripcioncontroller.text,
+            caracteristicacontroller.text,
+            preciocontroller.text,
+            base64Image, // Pasar la imagen en base64
+            ciudadcontroller.text,
+            provinciacontroller.text,
+          );
+          Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
+        } catch (e) {
+          // Muestra un mensaje de error si ocurre un problema
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      } else {
+        // Muestra un mensaje de error si la imagen no está seleccionada
+>>>>>>> 307d953fee6a96a3440eebd0bf7996ae57b5d5a5
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(content: Text('Error: $e')),
         );
@@ -178,7 +215,11 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
+<<<<<<< HEAD
                       Navigator.pop(context, true); // Devuelve true si se agregó un auto.;
+=======
+                      Navigator.pop(context, true); 
+>>>>>>> 307d953fee6a96a3440eebd0bf7996ae57b5d5a5
                     },
                     child: const Text('Cancelar',
                         style: TextStyle(color: Colors.white)),
