@@ -56,9 +56,15 @@ class _ProveedorState extends State<Proveedor> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: Image.asset(
-                            auto.imagePath,
+                          child: Image.file(
+                            File(auto.imagePath),
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) {
+                              return Image.asset(
+                                'assets/images/buggati.jpg',
+                                fit: BoxFit.cover,
+                              );
+                            },
                           ),
                         ),
                         Padding(
@@ -103,7 +109,20 @@ class AutoDetailScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Image.asset(auto.imagePath, width: double.infinity, height: 200, fit: BoxFit.cover),
+            Image.file(
+              File(auto.imagePath),
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) {
+                return Image.asset(
+                  'assets/images/buggati.jpg',
+                  width: double.infinity,
+                  height: 200,
+                  fit: BoxFit.cover,
+                );
+              },
+            ),
             const SizedBox(height: 10),
             Text('Marca: ${auto.marca}', style: const TextStyle(fontSize: 18, fontWeight: FontWeight.bold)),
             const SizedBox(height: 5),
@@ -114,6 +133,10 @@ class AutoDetailScreen extends StatelessWidget {
             Text('Características: ${auto.caracteristicas}'),
             const SizedBox(height: 5),
             Text('Precio: \$${auto.precio}'),
+            const SizedBox(height: 5),
+            Text('Ciudad: ${auto.ciudad}'), // Nueva línea para mostrar la ciudad
+            const SizedBox(height: 5),
+            Text('Provincia: ${auto.provincia}'), // Nueva línea para mostrar la provincia
             const SizedBox(height: 20),
             Row(
               mainAxisAlignment: MainAxisAlignment.end,
@@ -140,19 +163,16 @@ class AutoDetailScreen extends StatelessWidget {
                           actions: [
                             TextButton(
                               onPressed: () {
-                                Navigator.of(context)
-                                    .pop(); 
+                                Navigator.of(context).pop(); 
                               },
                               child: const Text("Cancelar"),
                             ),
                             TextButton(
                               onPressed: () async {
                                 await eliminarAuto(auto.id).then((_){
-                        Navigator.pop(context);
-                      });
-                                //print("Auto eliminado");
-                                Navigator.of(context)
-                                    .pop(); 
+                                  Navigator.pop(context);
+                                });
+                                Navigator.of(context).pop();
                               },
                               child: const Text("Eliminar"),
                             ),
@@ -170,6 +190,3 @@ class AutoDetailScreen extends StatelessWidget {
     );
   }
 }
-
-
-

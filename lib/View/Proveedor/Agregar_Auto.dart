@@ -18,6 +18,8 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController descripcioncontroller = TextEditingController(text: "");
   TextEditingController caracteristicacontroller = TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
+  TextEditingController ciudadcontroller = TextEditingController(text: ""); // Nuevo controlador para ciudad
+  TextEditingController provinciacontroller = TextEditingController(text: ""); // Nuevo controlador para provincia
   File? _imageFile;
 
   _selectImage(ImageSource source) async {
@@ -33,21 +35,23 @@ class _AgregarAutoState extends State<AgregarAuto> {
   _guardarAuto() async {
     if (_formKey.currentState!.validate()) {
       if (_imageFile != null) {
-        // Llama a la función guardarAuto aquí
+        // Llama a la función guardarAuto aquí con los nuevos campos
         await guardarAuto(
           marcacontroller.text,
           empresacontroller.text,
           descripcioncontroller.text,
           caracteristicacontroller.text,
           preciocontroller.text,
-          _imageFile!.path, // Asegúrate de pasar la ruta de la imagen
+          _imageFile!.path,
+          ciudadcontroller.text, // Pasar el valor de la ciudad
+          provinciacontroller.text, // Pasar el valor de la provincia
         ).then((_) {
           Navigator.pop(context);
         });
       } else {
         // Muestra un mensaje de error si la imagen no está seleccionada
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Por favor seleccione una imagen')),
+          const SnackBar(content: Text('Por favor seleccione una imagen')),
         );
       }
     }
@@ -132,6 +136,28 @@ class _AgregarAutoState extends State<AgregarAuto> {
                 validator: (value) {
                   if (value == null || value.isEmpty) {
                     return 'Por favor ingrese el precio';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: provinciacontroller, 
+                decoration: const InputDecoration(labelText: 'Provincia'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la provincia';
+                  }
+                  return null;
+                },
+              ),
+              const SizedBox(height: 10),
+              TextFormField(
+                controller: ciudadcontroller, 
+                decoration: const InputDecoration(labelText: 'Ciudad'),
+                validator: (value) {
+                  if (value == null || value.isEmpty) {
+                    return 'Por favor ingrese la ciudad';
                   }
                   return null;
                 },
