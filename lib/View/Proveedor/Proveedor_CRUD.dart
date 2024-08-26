@@ -14,6 +14,10 @@ class Proveedor extends StatefulWidget {
 }
 
 class _ProveedorState extends State<Proveedor> {
+  Future<void> _refreshAutos() async {
+    setState(() {});
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -21,7 +25,7 @@ class _ProveedorState extends State<Proveedor> {
         title: const Text('CRUD Autos'),
       ),
       body: FutureBuilder(
-        future: getAuto(), 
+        future: getAuto(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
             return Center(child: CircularProgressIndicator());
@@ -31,51 +35,54 @@ class _ProveedorState extends State<Proveedor> {
             return Center(child: Text('No data available'));
           } else {
             List autos = snapshot.data!;
-            return GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Número de columnas en la cuadrícula
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                childAspectRatio: 1,
-              ),
-              itemCount: autos.length, // Número de autos en la lista
-              itemBuilder: (context, index) {
-                Auto auto = autos[index];
-                return GestureDetector(
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => AutoDetailScreen(auto: auto),
-                      ),
-                    );
-                  },
-                  child: Card(
-                    margin: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: Image.file(
-                            File(auto.imagePath),
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
-                                'assets/images/buggati.jpg',
-                                fit: BoxFit.cover,
-                              );
-                            },
+            return RefreshIndicator(
+              onRefresh: _refreshAutos,  // Llamado cuando se desliza hacia abajo
+              child: GridView.builder(
+                gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                  crossAxisCount: 2, // Número de columnas en la cuadrícula
+                  crossAxisSpacing: 10.0,
+                  mainAxisSpacing: 10.0,
+                  childAspectRatio: 1,
+                ),
+                itemCount: autos.length, // Número de autos en la lista
+                itemBuilder: (context, index) {
+                  Auto auto = autos[index];
+                  return GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => AutoDetailScreen(auto: auto),
+                        ),
+                      );
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: Image.file(
+                              File(auto.imagePath),
+                              fit: BoxFit.cover,
+                              errorBuilder: (context, error, stackTrace) {
+                                return Image.asset(
+                                  'assets/images/buggati.jpg',
+                                  fit: BoxFit.cover,
+                                );
+                              },
+                            ),
                           ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(auto.marca, style: const TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                      ],
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(auto.marca, style: const TextStyle(fontWeight: FontWeight.bold)),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
+                  );
+                },
+              ),
             );
           }
         },
@@ -95,7 +102,7 @@ class _ProveedorState extends State<Proveedor> {
 
 class AutoDetailScreen extends StatelessWidget {
   final Auto auto;
-  
+
   const AutoDetailScreen({required this.auto});
 
   @override
