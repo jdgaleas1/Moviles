@@ -1,10 +1,12 @@
+import 'package:autos/View/Proveedor/Reservas_Detalles.dart';
+import 'package:flutter/material.dart';
 import 'package:autos/Model/Reserva.dart';
+import 'package:autos/Model/AutoModel.dart';
+import 'package:autos/Model/loginModel.dart'; // Asegúrate de importar el modelo de usuario
 import 'package:autos/Servicios/Auto_Service.dart';
 import 'package:autos/Servicios/Reservas_Service.dart';
-import 'package:flutter/material.dart';
-import 'package:autos/Model/AutoModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
-import 'dart:convert'; // Import necesario para base64Decode
+import 'package:autos/Servicios/LoginService.dart'; // Importa el servicio de login
+import 'dart:convert';
 
 class ReservasView extends StatefulWidget {
   const ReservasView({Key? key}) : super(key: key);
@@ -15,118 +17,145 @@ class ReservasView extends StatefulWidget {
 
 class _ReservasViewState extends State<ReservasView> {
   List<Reserva> reservas = [];
-  Auto? selectedAuto; // Auto seleccionado para mostrar detalles
-  Reserva? selectedReserva; // Reserva seleccionada
 
   @override
   void initState() {
     super.initState();
-    _fetchReservas(); // Cargar las reservas al iniciar
+    _fetchReservas();
   }
 
   Future<void> _fetchReservas() async {
-    List<Reserva> fetchedReservas =
-        await getReservas(); // Función para obtener las reservas desde Firestore
+    List<Reserva> fetchedReservas = await getReservas();
     setState(() {
       reservas = fetchedReservas;
     });
   }
 
   Future<Auto?> _fetchAutoById(int idaut) async {
-    return await getAutoById(idaut); // Función para obtener el auto por id
+    return await getAutoById(idaut);
+  }
+
+  Future<LoginModel?> _fetchUserById(String idusu) async {
+    return await LoginService().getUserById(idusu);
+  }
+
+  void _showDetails(Reserva reserva, Auto auto) {
+    showModalBottomSheet(
+      context: context,
+      builder: (context) {
+        return ReservaDetailSheet(auto: auto, reserva: reserva);
+      },
+    );
+  }
+
+  String _getFormattedDuration(DateTime fechaIni, DateTime fechaFin) {
+    Duration duration = fechaFin.difference(fechaIni);
+
+    if (duration.inDays >= 7) {
+      int weeks = duration.inDays ~/ 7;
+      return '$weeks ${weeks == 1 ? 'semana' : 'semanas'}';
+    } else if (duration.inDays >= 1) {
+      return '${duration.inDays} ${duration.inDays == 1 ? 'día' : 'días'}';
+    } else {
+      return '${duration.inHours} ${duration.inHours == 1 ? 'hora' : 'horas'}';
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reservas'),
+        title: const Text('Reservas Aprobadas'),
       ),
-      body: Column(
-        children: [
-          Expanded(
-            child: GridView.builder(
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2, // Dos columnas
-                crossAxisSpacing: 10.0,
-                mainAxisSpacing: 10.0,
-                childAspectRatio: 0.75, // Aspecto de las tarjetas
-              ),
-              itemCount: reservas.length,
-              itemBuilder: (context, index) {
-                Reserva reserva = reservas[index];
-                return GestureDetector(
-                  onTap: () async {
-                    Auto? auto = await _fetchAutoById(reserva.idaut);
-                    setState(() {
-                      selectedAuto = auto;
-                      selectedReserva = reserva;
-                    });
-                  },
-                  child: Card(
-                    margin: const EdgeInsets.all(10),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        Expanded(
-                          child: selectedAuto != null &&
-                                  selectedReserva == reserva
-                              ? selectedAuto!.imageBase64.isNotEmpty
-                                  ? Image.memory(
-                                      base64Decode(
-                                          selectedAuto!.imageBase64),
-                                      fit: BoxFit.cover,
-                                    )
-                                  : Image.asset(
-                                      'assets/images/buggati.jpg', // Imagen por defecto
-                                      fit: BoxFit.cover,
-                                    )
-                              : Container(), // Contenedor vacío para la imagen mientras se carga
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text('Marca del Auto ${reserva.idaut}',
+      body: GridView.builder(
+        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+          crossAxisCount: 2,
+          crossAxisSpacing: 10.0,
+          mainAxisSpacing: 10.0,
+          childAspectRatio: 0.75,
+        ),
+        itemCount: reservas.length,
+        itemBuilder: (context, index) {
+          Reserva reserva = reservas[index];
+          return FutureBuilder<Auto?>(
+            future: _fetchAutoById(reserva.idaut),
+            builder: (context, autoSnapshot) {
+              if (autoSnapshot.connectionState == ConnectionState.waiting) {
+                return const Center(child: CircularProgressIndicator());
+              } else if (autoSnapshot.hasError) {
+                return const Center(child: Text('Error al cargar el auto'));
+              } else if (!autoSnapshot.hasData || autoSnapshot.data == null) {
+                return const Center(child: Text('Auto no disponible'));
+              }
+
+              Auto auto = autoSnapshot.data!;
+
+              return FutureBuilder<LoginModel?>(
+                future: _fetchUserById(reserva.idusu),
+                builder: (context, userSnapshot) {
+                  if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (userSnapshot.hasError) {
+                    return const Center(
+                        child: Text('Error al cargar el usuario'));
+                  } else if (!userSnapshot.hasData ||
+                      userSnapshot.data == null) {
+                    return const Center(child: Text('Usuario no disponible'));
+                  }
+
+                  LoginModel user = userSnapshot.data!;
+
+                  return GestureDetector(
+                    onTap: () {
+                      _showDetails(reserva, auto);
+                    },
+                    child: Card(
+                      margin: const EdgeInsets.all(10),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: auto.imageBase64.isNotEmpty
+                                ? Image.memory(
+                                    base64Decode(auto.imageBase64),
+                                    fit: BoxFit.cover,
+                                  )
+                                : Image.asset(
+                                    'assets/images/buggati.jpg',
+                                    fit: BoxFit.cover,
+                                  ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Auto: ${auto.marca}',
                               style:
-                                  const TextStyle(fontWeight: FontWeight.bold)),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(8.0),
-                          child: Text(
-                              'Duración: ${reserva.fechaFin.difference(reserva.fechaIni).inDays} días'),
-                        ),
-                      ],
+                                  const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Reservado por: ${user.nombre} ${user.apellido}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(8.0),
+                            child: Text(
+                              'Duración: ${_getFormattedDuration(reserva.fechaIni, reserva.fechaFin)}',
+                              style: const TextStyle(fontSize: 12),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
-                  ),
-                );
-              },
-            ),
-          ),
-          if (selectedAuto != null && selectedReserva != null)
-            Padding(
-              padding: const EdgeInsets.all(16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Divider(),
-                  Text('Detalles de la Reserva:',
-                      style: Theme.of(context).textTheme.titleLarge),
-                  const SizedBox(height: 10),
-                  Text('Marca: ${selectedAuto!.marca}'),
-                  Text('Placa: ${selectedAuto!.placa}'),
-                  Text('Descripción: ${selectedAuto!.descripcion}'),
-                  Text('Características: ${selectedAuto!.caracteristicas}'),
-                  Text('Precio: \$${selectedAuto!.precio}'),
-                  //Text('Ciudad: ${selectedAuto!.ciudad}'),
-                  //Text('Provincia:${selectedAuto!.provincia}'),
-                  const SizedBox(height: 10),
-                  Text('Fecha de Inicio: ${selectedReserva!.fechaIni}'),
-                  Text('Fecha de Fin: ${selectedReserva!.fechaFin}'),
-                  Text('ID del Usuario: ${selectedReserva!.idusu}'),
-                  // Muestra el ID del usuario
-                ],
-              ),
-            ),
-        ],
+                  );
+                },
+              );
+            },
+          );
+        },
       ),
     );
   }
