@@ -3,7 +3,8 @@ import 'package:autos/Servicios/Auto_Service.dart';
 import 'package:autos/Servicios/Reservas_Service.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/Model/AutoModel.dart';
-import 'package:cloud_firestore/cloud_firestore.dart'; 
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'dart:convert'; // Import necesario para base64Decode
 
 class VerSolicitudesReserva extends StatefulWidget {
   const VerSolicitudesReserva({super.key});
@@ -77,16 +78,16 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        if (auto != null) Image.network(
-                          auto.imagePath,
-                          fit: BoxFit.cover,
-                          errorBuilder: (context, error, stackTrace) {
-                            return Image.asset(
-                              'assets/images/buggati.jpg', // Imagen por defecto
-                              fit: BoxFit.cover,
-                            );
-                          },
-                        ),
+                        if (auto != null)
+                          auto.imageBase64.isNotEmpty
+                              ? Image.memory(
+                                  base64Decode(auto.imageBase64),
+                                  fit: BoxFit.cover,
+                                )
+                              : Image.asset(
+                                  'assets/images/buggati.jpg', // Imagen por defecto
+                                  fit: BoxFit.cover,
+                                ),
                         const SizedBox(height: 10),
                         Text('Usuario: ${reserva.idusu}'),
                         Text('Fecha de Reserva: ${reserva.fechaIni}'),
@@ -137,16 +138,15 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
                 children: [
                   Expanded(
                     child: auto != null
-                        ? Image.network(
-                            auto.imagePath,
-                            fit: BoxFit.cover,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Image.asset(
+                        ? auto.imageBase64.isNotEmpty
+                            ? Image.memory(
+                                base64Decode(auto.imageBase64),
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
                                 'assets/images/buggati.jpg', // Imagen por defecto
                                 fit: BoxFit.cover,
-                              );
-                            },
-                          )
+                              )
                         : Image.asset(
                             'assets/images/buggati.jpg', // Imagen por defecto si el auto es null
                             fit: BoxFit.cover,
