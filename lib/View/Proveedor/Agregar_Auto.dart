@@ -19,19 +19,10 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController caracteristicacontroller =
       TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
-<<<<<<< HEAD
-  TextEditingController ciudadcontroller =
-      TextEditingController(text: ""); // Nuevo controlador para ciudad
-  TextEditingController provinciacontroller =
-      TextEditingController(text: ""); // Nuevo controlador para provincia
+  TextEditingController ciudadcontroller = TextEditingController(text: ""); // Nuevo controlador para ciudad
+  TextEditingController provinciacontroller = TextEditingController(text: ""); // Nuevo controlador para provincia
   File? _imageFile;
-=======
-  TextEditingController ciudadcontroller = TextEditingController(text: ""); 
-  TextEditingController provinciacontroller = TextEditingController(text: ""); 
-  Uint8List? _imageBytes;  // Almacenar los bytes de la imagen
->>>>>>> adab774f6e8145110e86b6825e16e1ec6f7f40df
 
-  // Función para seleccionar la imagen
   _selectImage(ImageSource source) async {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: source);
@@ -42,56 +33,35 @@ class _AgregarAutoState extends State<AgregarAuto> {
     }
   }
 
-<<<<<<< HEAD
-  _guardarAuto() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageFile != null) {
-        try {
-=======
-  // Función para guardar el auto con la imagen
-  _guardarAuto() async {
-    if (_formKey.currentState!.validate()) {
-      if (_imageBytes != null) {
-        try {
-          // Convertir los bytes de la imagen a una cadena base64
-          String base64Image = base64Encode(_imageBytes!);
-
-          // Llamar al método que guarda el auto con la imagen en base64
->>>>>>> adab774f6e8145110e86b6825e16e1ec6f7f40df
-          await guardarAuto(
-            marcacontroller.text,
-            empresacontroller.text,
-            descripcioncontroller.text,
-            caracteristicacontroller.text,
-            preciocontroller.text,
-<<<<<<< HEAD
-            _imageFile!.path,
-            ciudadcontroller.text,
-            provinciacontroller.text,
-          );
-          Navigator.pop(
-              context, true); // Devuelve true si se agregó el auto con éxito.
-=======
-            base64Image, // Pasar la imagen en base64
-            ciudadcontroller.text,
-            provinciacontroller.text,
-          );
-          Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
->>>>>>> adab774f6e8145110e86b6825e16e1ec6f7f40df
-        } catch (e) {
-          // Muestra un mensaje de error si ocurre un problema
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Error: $e')),
-          );
-        }
-      } else {
-        // Muestra un mensaje de error si la imagen no está seleccionada
+ _guardarAuto() async {
+  if (_formKey.currentState!.validate()) {
+    if (_imageFile != null) {
+      try {
+        await guardarAuto(
+          marcacontroller.text,
+          empresacontroller.text,
+          descripcioncontroller.text,
+          caracteristicacontroller.text,
+          preciocontroller.text,
+          _imageFile!.path,
+          ciudadcontroller.text,
+          provinciacontroller.text,
+        );
+        Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
+      } catch (e) {
+        // Muestra un mensaje de error si ocurre un problema
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Por favor seleccione una imagen')),
+          SnackBar(content: Text('Error: $e')),
         );
       }
+    } else {
+      // Muestra un mensaje de error si la imagen no está seleccionada
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Por favor seleccione una imagen')),
+      );
     }
   }
+}
 
   @override
   Widget build(BuildContext context) {
@@ -208,12 +178,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-<<<<<<< HEAD
-                      Navigator.pop(context,
-                          true); // Devuelve true si se agregó un auto.;
-=======
-                      Navigator.pop(context, true); 
->>>>>>> adab774f6e8145110e86b6825e16e1ec6f7f40df
+                      Navigator.pop(context, true); // Devuelve true si se agregó un auto.;
                     },
                     child: const Text('Cancelar',
                         style: TextStyle(color: Colors.white)),
