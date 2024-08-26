@@ -14,8 +14,7 @@ class _CreateAccountState extends State<CreateAccount> {
   final TextEditingController _firstNameController = TextEditingController();
   final TextEditingController _lastNameController = TextEditingController();
   final TextEditingController _phoneController = TextEditingController();
-  final TextEditingController _usernameController =
-      TextEditingController(); // Campo adicional para el nombre de usuario
+  final TextEditingController _usernameController = TextEditingController();
   bool _isClient = true;
   bool _isProvider = false;
 
@@ -38,6 +37,16 @@ class _CreateAccountState extends State<CreateAccount> {
           ));
         }
 
+        // Convertir el número de teléfono a un entero, si es posible
+        int phoneNumber;
+        try {
+          phoneNumber = int.parse(_phoneController.text.replaceAll(
+              RegExp(r'\D'), '')); // Elimina caracteres no numéricos
+        } catch (e) {
+          phoneNumber = 0; // Manejo de errores si la conversión falla
+          print('Error al convertir el teléfono a número: $e');
+        }
+
         // Guardar datos del usuario en Firestore
         await FirebaseFirestore.instance
             .collection('usuarios')
@@ -45,10 +54,10 @@ class _CreateAccountState extends State<CreateAccount> {
             .set({
           'apellido': _lastNameController.text,
           'contra': _passwordController.text,
-          'esCliente': true,
-          'esProveedor': false,
+          'esCliente': _isClient,
+          'esProveedor': _isProvider,
           'nombre': _firstNameController.text,
-          'telefono': _phoneController.text,
+          'telefono': phoneNumber,
           'user': _usernameController.text, // Guardar nombre de usuario
           'email': user.email ?? '',
         });
@@ -115,12 +124,11 @@ class _CreateAccountState extends State<CreateAccount> {
             TextField(
               controller: _phoneController,
               decoration: InputDecoration(labelText: 'Teléfono'),
+              keyboardType: TextInputType.phone,
             ),
             TextField(
               controller: _usernameController,
-              decoration: InputDecoration(
-                  labelText:
-                      'Nombre de Usuario'), // Campo adicional para el nombre de usuario
+              decoration: InputDecoration(labelText: 'Nombre de Usuario'),
             ),
             SizedBox(height: 20),
             ElevatedButton(
