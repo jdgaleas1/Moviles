@@ -84,7 +84,8 @@ class _CreateAccountState extends State<CreateAccount> {
         actions: <Widget>[
           TextButton(
             onPressed: () {
-              Navigator.of(context).pop();
+              //Navigator.of(context).pop();
+              Navigator.pop(context); 
             },
             child: Text('Ok'),
           ),
