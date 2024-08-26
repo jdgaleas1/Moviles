@@ -85,7 +85,6 @@ class _CreateAccountState extends State<CreateAccount> {
           TextButton(
             onPressed: () {
               Navigator.of(context).pop();
-              Navigator.of(context).pushReplacementNamed('/login');
             },
             child: Text('Ok'),
           ),
