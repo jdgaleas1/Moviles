@@ -15,19 +15,18 @@ Future<List> getAuto() async {
 
   try {
     // Obtiene la colección de autos desde Firestore
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('auto').get();
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('auto').get();
 
     // Mapea los documentos a instancias de Auto
     _autos = snapshot.docs.map((doc) {
       return Auto.fromFirestore(doc.data() as Map<String, dynamic>);
     }).toList();
-
   } catch (e) {
     print('Error al obtener los autos: $e');
   }
 
   return _autos;
-
 }
 
 Future<int> getNextAutoId() async {
@@ -42,15 +41,14 @@ Future<int> getNextAutoId() async {
         .get();
 
     if (snapshot.docs.isNotEmpty) {
-      int lastId = snapshot.docs.first['id'];  // Captura el último id
+      int lastId = snapshot.docs.first['id']; // Captura el último id
       print('Último id consultado: $lastId');
-      nextId = lastId + 1;  // Incrementa el id
-      
+      nextId = lastId + 1; // Incrementa el id
     } else {
-      nextId = 1;  // Si no hay autos en la colección, comienza en 1
+      nextId = 1; // Si no hay autos en la colección, comienza en 1
       print('No se encontraron autos, comenzando en ID 1');
     }
-    
+
     print('Nuevo id: $nextId');
   } catch (e) {
     print('Error al obtener el próximo ID: $e');
@@ -59,14 +57,24 @@ Future<int> getNextAutoId() async {
   return nextId;
 }
 
-
-Future<void> guardarAuto(String marca, String placa, String descripcion, String caracteristicas, String precio, String imagePath, String ciudad, String provincia) async {
+Future<void> guardarAuto(
+    String marca,
+    String placa,
+    String descripcion,
+    String caracteristicas,
+    String precio,
+    String imagePath,
+    String ciudad,
+    String provincia) async {
   int nuevoId = await getNextAutoId();
   print("llegó al guardar");
   try {
     print("llegó al try");
     // Crear un nuevo documento con el id autoincremental
-    await FirebaseFirestore.instance.collection('auto').doc(nuevoId.toString()).set({
+    await FirebaseFirestore.instance
+        .collection('auto')
+        .doc(nuevoId.toString())
+        .set({
       'id': nuevoId,
       'marca': marca,
       'placa': placa,
@@ -84,18 +92,32 @@ Future<void> guardarAuto(String marca, String placa, String descripcion, String 
   }
 }
 
-Future<void> editarAuto(int id, String marca, String placa, String descripcion, String caracteristicas, String precio, String? imagePath, String ciudad, String provincia) async {
+Future<void> editarAuto(
+    int id,
+    String marca,
+    String placa,
+    String descripcion,
+    String caracteristicas,
+    String precio,
+    String? imagePath,
+    String ciudad,
+    String provincia) async {
   print("llegó al guardar");
   try {
     print("llegó al try");
     // Actualiza el documento en la colección 'auto' con el ID especificado
-    await FirebaseFirestore.instance.collection('auto').doc(id.toString()).update({
+    await FirebaseFirestore.instance
+        .collection('auto')
+        .doc(id.toString())
+        .update({
       'marca': marca,
       'placa': placa,
       'descripcion': descripcion,
       'caracteristicas': caracteristicas,
-      'precio': double.parse(precio), // Asegúrate de que el precio esté en formato double
-      'imagePath': imagePath ?? '', // Si no se proporciona imagePath, usa una cadena vacía
+      'precio': double.parse(
+          precio), // Asegúrate de que el precio esté en formato double
+      'imagePath': imagePath ??
+          '', // Si no se proporciona imagePath, usa una cadena vacía
       'ciudad': ciudad,
       'provincia': provincia,
     });
@@ -110,10 +132,34 @@ Future<void> editarAuto(int id, String marca, String placa, String descripcion, 
 Future<void> eliminarAuto(int id) async {
   try {
     // Elimina el documento en la colección 'auto' con el ID especificado
-    await FirebaseFirestore.instance.collection('auto').doc(id.toString()).delete();
+    await FirebaseFirestore.instance
+        .collection('auto')
+        .doc(id.toString())
+        .delete();
 
     print("Auto eliminado exitosamente con ID: $id");
   } catch (e) {
     print('Error al eliminar el auto: $e');
+  }
+}
+
+Future<Auto?> getAutoById(int id) async {
+  try {
+    // Obtiene el documento desde Firestore según el ID proporcionado
+    DocumentSnapshot doc = await FirebaseFirestore.instance
+        .collection('auto')
+        .doc(id.toString())
+        .get();
+
+    if (doc.exists) {
+      // Si el documento existe, lo convierte a una instancia de Auto
+      return Auto.fromFirestore(doc.data() as Map<String, dynamic>);
+    } else {
+      print('No se encontró un auto con el ID $id');
+      return null;
+    }
+  } catch (e) {
+    print('Error al obtener el auto con ID $id: $e');
+    return null;
   }
 }

@@ -16,10 +16,13 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController marcacontroller = TextEditingController(text: "");
   TextEditingController empresacontroller = TextEditingController(text: "");
   TextEditingController descripcioncontroller = TextEditingController(text: "");
-  TextEditingController caracteristicacontroller = TextEditingController(text: "");
+  TextEditingController caracteristicacontroller =
+      TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
-  TextEditingController ciudadcontroller = TextEditingController(text: ""); // Nuevo controlador para ciudad
-  TextEditingController provinciacontroller = TextEditingController(text: ""); // Nuevo controlador para provincia
+  TextEditingController ciudadcontroller =
+      TextEditingController(text: ""); // Nuevo controlador para ciudad
+  TextEditingController provinciacontroller =
+      TextEditingController(text: ""); // Nuevo controlador para provincia
   File? _imageFile;
 
   _selectImage(ImageSource source) async {
@@ -32,35 +35,36 @@ class _AgregarAutoState extends State<AgregarAuto> {
     }
   }
 
- _guardarAuto() async {
-  if (_formKey.currentState!.validate()) {
-    if (_imageFile != null) {
-      try {
-        await guardarAuto(
-          marcacontroller.text,
-          empresacontroller.text,
-          descripcioncontroller.text,
-          caracteristicacontroller.text,
-          preciocontroller.text,
-          _imageFile!.path,
-          ciudadcontroller.text,
-          provinciacontroller.text,
-        );
-        Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
-      } catch (e) {
-        // Muestra un mensaje de error si ocurre un problema
+  _guardarAuto() async {
+    if (_formKey.currentState!.validate()) {
+      if (_imageFile != null) {
+        try {
+          await guardarAuto(
+            marcacontroller.text,
+            empresacontroller.text,
+            descripcioncontroller.text,
+            caracteristicacontroller.text,
+            preciocontroller.text,
+            _imageFile!.path,
+            ciudadcontroller.text,
+            provinciacontroller.text,
+          );
+          Navigator.pop(
+              context, true); // Devuelve true si se agregó el auto con éxito.
+        } catch (e) {
+          // Muestra un mensaje de error si ocurre un problema
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e')),
+          );
+        }
+      } else {
+        // Muestra un mensaje de error si la imagen no está seleccionada
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Error: $e')),
+          const SnackBar(content: Text('Por favor seleccione una imagen')),
         );
       }
-    } else {
-      // Muestra un mensaje de error si la imagen no está seleccionada
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Por favor seleccione una imagen')),
-      );
     }
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -147,7 +151,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: provinciacontroller, 
+                controller: provinciacontroller,
                 decoration: const InputDecoration(labelText: 'Provincia'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -158,7 +162,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
               ),
               const SizedBox(height: 10),
               TextFormField(
-                controller: ciudadcontroller, 
+                controller: ciudadcontroller,
                 decoration: const InputDecoration(labelText: 'Ciudad'),
                 validator: (value) {
                   if (value == null || value.isEmpty) {
@@ -177,10 +181,13 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, true); // Devuelve true si se agregó un auto.;
+                      Navigator.pop(context,
+                          true); // Devuelve true si se agregó un auto.;
                     },
-                    child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
-                    style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+                    child: const Text('Cancelar',
+                        style: TextStyle(color: Colors.white)),
+                    style:
+                        ElevatedButton.styleFrom(backgroundColor: Colors.red),
                   ),
                 ],
               ),
