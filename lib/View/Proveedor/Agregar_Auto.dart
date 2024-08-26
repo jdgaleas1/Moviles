@@ -1,6 +1,7 @@
+import 'package:autos/View/Proveedor/caracteristicas.dart';
+import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'dart:typed_data';
-import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
 
@@ -16,51 +17,47 @@ class _AgregarAutoState extends State<AgregarAuto> {
   TextEditingController marcacontroller = TextEditingController(text: "");
   TextEditingController empresacontroller = TextEditingController(text: "");
   TextEditingController descripcioncontroller = TextEditingController(text: "");
-  TextEditingController caracteristicacontroller = TextEditingController(text: "");
   TextEditingController preciocontroller = TextEditingController(text: "");
   TextEditingController ciudadcontroller = TextEditingController(text: ""); 
   TextEditingController provinciacontroller = TextEditingController(text: ""); 
-  Uint8List? _imageBytes;  // Almacenar los bytes de la imagen
+  Uint8List? _imageBytes;
+  List<String> _selectedFeatures = [];
 
   // Función para seleccionar la imagen
   _selectImage(ImageSource source) async {
     ImagePicker picker = ImagePicker();
     XFile? image = await picker.pickImage(source: source);
     if (image != null) {
-      // Leer los bytes de la imagen
       _imageBytes = await image.readAsBytes();
-      setState(() {}); // Actualizar el estado después de que la imagen se haya leído
+      setState(() {});
     }
   }
 
-  // Función para guardar el auto con la imagen
+  // Función para guardar el auto con la imagen y características
   _guardarAuto() async {
     if (_formKey.currentState!.validate()) {
       if (_imageBytes != null) {
         try {
-          // Convertir los bytes de la imagen a una cadena base64
           String base64Image = base64Encode(_imageBytes!);
+          String selectedFeatures = _selectedFeatures.join(', ');
 
-          // Llamar al método que guarda el auto con la imagen en base64
           await guardarAuto(
             marcacontroller.text,
             empresacontroller.text,
             descripcioncontroller.text,
-            caracteristicacontroller.text,
+            selectedFeatures,  // Características seleccionadas
             preciocontroller.text,
-            base64Image, // Pasar la imagen en base64
+            base64Image,
             ciudadcontroller.text,
             provinciacontroller.text,
           );
-          Navigator.pop(context, true); // Devuelve true si se agregó el auto con éxito.
+          Navigator.pop(context, true);
         } catch (e) {
-          // Muestra un mensaje de error si ocurre un problema
           ScaffoldMessenger.of(context).showSnackBar(
             SnackBar(content: Text('Error: $e')),
           );
         }
       } else {
-        // Muestra un mensaje de error si la imagen no está seleccionada
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Por favor seleccione una imagen')),
         );
@@ -82,7 +79,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
             children: [
               _imageBytes == null
                   ? const Text('No se ha seleccionado una imagen.')
-                  : Image.memory(_imageBytes!, height: 200),  // Mostrar la imagen a partir de bytes
+                  : Image.memory(_imageBytes!, height: 200),
               Row(
                 children: [
                   ElevatedButton(
@@ -130,14 +127,12 @@ class _AgregarAutoState extends State<AgregarAuto> {
                 },
               ),
               const SizedBox(height: 10),
-              TextFormField(
-                controller: caracteristicacontroller,
-                decoration: const InputDecoration(labelText: 'Características'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese las características';
-                  }
-                  return null;
+              CaracteristicasSelector(
+                selectedFeatures: _selectedFeatures,
+                onChanged: (features) {
+                  setState(() {
+                    _selectedFeatures = features;
+                  });
                 },
               ),
               const SizedBox(height: 10),
@@ -183,7 +178,7 @@ class _AgregarAutoState extends State<AgregarAuto> {
                   ),
                   ElevatedButton(
                     onPressed: () {
-                      Navigator.pop(context, true); 
+                      Navigator.pop(context, true);
                     },
                     child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
                     style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -194,6 +189,41 @@ class _AgregarAutoState extends State<AgregarAuto> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CaracteristicasSelector extends StatelessWidget {
+  final List<String> selectedFeatures;
+  final Function(List<String>) onChanged;
+
+  CaracteristicasSelector({required this.selectedFeatures, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Características', style: TextStyle(fontWeight: FontWeight.bold)),
+        Wrap(
+          spacing: 10.0,
+          children: caracteristicas.map((caracteristica) {
+            bool isSelected = selectedFeatures.contains(caracteristica.nombre);
+            return ChoiceChip(
+              avatar: Icon(caracteristica.icon),
+              label: Text(caracteristica.nombre),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) {
+                  onChanged([...selectedFeatures, caracteristica.nombre]);
+                } else {
+                  onChanged(selectedFeatures.where((feature) => feature != caracteristica.nombre).toList());
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

@@ -1,16 +1,7 @@
 import 'package:autos/Model/AutoModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future<List> getAuto() async {
-  /*List<Auto> _autos = [
-    Auto(id: 0, marca: 'Beat', placa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 10000, imagePath: 'assets/images/buggati.jpg', ciudad: 'Quito', provincia: 'Pichincha'),
-    Auto(id: 1, marca: 'Kwid', placa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 11800, imagePath: 'assets/images/buggati.jpg', ciudad: 'Guayaquil', provincia: 'Guayas'),
-    Auto(id: 2, marca: 'Beat', placa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 7000, imagePath: 'assets/images/buggati.jpg', ciudad: 'Cuenca', provincia: 'Azuay'),
-    Auto(id: 3, marca: 'Kwid', placa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 15000, imagePath: 'assets/images/buggati.jpg', ciudad: 'Ambato', provincia: 'Tungurahua'),
-    Auto(id: 4, marca: 'Beat', placa: 'Chevrolet', descripcion: 'Descripción del Beat', caracteristicas: 'Características del Beat', precio: 15000, imagePath: 'assets/images/buggati.jpg', ciudad: 'Quito', provincia: 'Pichincha'),
-    Auto(id: 5, marca: 'Kwid', placa: 'Renault', descripcion: 'Descripción del Kwid', caracteristicas: 'Características del Kwid', precio: 11050, imagePath: 'assets/images/buggati.jpg', ciudad: 'Guayaquil', provincia: 'Guayas'),
-  ];
-  return _autos;*/
+Future<List<Auto>> getAuto() async {
   List<Auto> _autos = [];
 
   try {
@@ -21,13 +12,12 @@ Future<List> getAuto() async {
     _autos = snapshot.docs.map((doc) {
       return Auto.fromFirestore(doc.data() as Map<String, dynamic>);
     }).toList();
-
+    
   } catch (e) {
     print('Error al obtener los autos: $e');
   }
 
   return _autos;
-
 }
 
 Future<int> getNextAutoId() async {

@@ -1,8 +1,10 @@
+import 'package:autos/Model/AutoModel.dart';
+import 'package:autos/Servicios/Auto_Service.dart';
+import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
+import 'package:autos/View/Cliente/Tabs/VistaDetallesAlquiler.dart';
+import 'package:autos/View/Cliente/Tabs/animacionFrontal.dart';
 import 'package:autos/View/Cliente/Tabs/vistaTraseraCarta.dart';
 import 'package:flutter/material.dart';
-import 'package:autos/View/Cliente/Tabs/VistaDetallesAlquiler.dart';
-import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
-import 'package:autos/View/Cliente/Tabs/animacionFrontal.dart';
 
 class BuscarTab extends StatefulWidget {
   const BuscarTab({super.key});
@@ -12,7 +14,13 @@ class BuscarTab extends StatefulWidget {
 }
 
 class _BuscarTabState extends State<BuscarTab> {
-  List<bool> isFlipped = List.generate(10, (_) => false);
+  late Future<List<Auto>> _autosFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _autosFuture = getAuto(); // Llama al servicio para obtener los autos
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -34,24 +42,38 @@ class _BuscarTabState extends State<BuscarTab> {
             ),
           ),
           Expanded(
-            child: GridView.builder(
-              padding: const EdgeInsets.all(7),
-              gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                crossAxisCount: 2,
-                crossAxisSpacing: 5,
-                mainAxisSpacing: 5,
-                childAspectRatio: 0.7,
-              ),
-              itemCount: 3,
-              itemBuilder: (context, index) {
-                return AnimarTab(
-                  isFlipped: isFlipped[index],
-                  frontWidget: buildFrontView(context, index),
-                  backWidget: buildBackView(index),
-                  onFlip: () => setState(() {
-                    isFlipped[index] = !isFlipped[index];
-                  }),
-                );
+            child: FutureBuilder<List<Auto>>(
+              future: _autosFuture,
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return Center(child: CircularProgressIndicator());
+                } else if (snapshot.hasError) {
+                  return Center(child: Text('Error: ${snapshot.error}'));
+                } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+                  return Center(child: Text('No hay autos disponibles.'));
+                } else {
+                  return GridView.builder(
+                    padding: const EdgeInsets.all(7),
+                    gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+                      crossAxisCount: 2,
+                      crossAxisSpacing: 5,
+                      mainAxisSpacing: 5,
+                      childAspectRatio: 0.7,
+                    ),
+                    itemCount: snapshot.data!.length,
+                    itemBuilder: (context, index) {
+                      final auto = snapshot.data![index];
+                      final caracteristicas = auto.caracteristicas.split(', '); // Divide las características en una lista
+
+                      return AnimarTab(
+                        isFlipped: false,
+                        frontWidget: buildFrontView(index, auto),
+                        backWidget: buildBackView(caracteristicas), // Usa la función `buildBackView`
+                        onFlip: () => setState(() {}),
+                      );
+                    },
+                  );
+                }
               },
             ),
           ),
@@ -60,7 +82,7 @@ class _BuscarTabState extends State<BuscarTab> {
     );
   }
 
-  Widget buildFrontView(BuildContext context, int index) {
+  Widget buildFrontView(int index, Auto auto) {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -78,11 +100,11 @@ class _BuscarTabState extends State<BuscarTab> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Nombre del carro $index',
+                  Text('Nombre del carro ${auto.marca}',
                       style: const TextStyle(
                           fontWeight: FontWeight.bold, fontSize: 12)),
-                  const Text('En terminal . UIO',
-                      style: TextStyle(fontSize: 10)),
+                  Text('En terminal . ${auto.ciudad}, ${auto.provincia}',
+                      style: const TextStyle(fontSize: 10)),
                   const Text('Política de combust.',
                       style: TextStyle(fontSize: 10)),
                   Row(
@@ -97,16 +119,14 @@ class _BuscarTabState extends State<BuscarTab> {
                           },
                           style: ElevatedButton.styleFrom(
                               minimumSize: const Size(50, 25),
-                              backgroundColor: Color.fromARGB(255, 1, 46, 65)),
+                              backgroundColor: const Color.fromARGB(255, 1, 46, 65)),
                           child: const Text('RESERVAR',
                               style: TextStyle(fontSize: 5)),
                         ),
                       ),
                       const SizedBox(width: 10),
                       IconButton(
-                        icon: const Icon(
-                          Icons.add_shopping_cart,
-                        ),
+                        icon: const Icon(Icons.add_shopping_cart),
                         onPressed: () => NotificationHelper.showAddedNotification(context),
                         color: Colors.grey,
                       )
@@ -120,5 +140,4 @@ class _BuscarTabState extends State<BuscarTab> {
       ),
     );
   }
-
 }

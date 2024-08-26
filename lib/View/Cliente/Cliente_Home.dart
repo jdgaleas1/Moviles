@@ -5,7 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:autos/View/Cliente/Cliente_reservas.dart';
 import 'package:autos/View/Cliente/Tabs/tabBuscar.dart';
-import 'package:autos/View/Cliente/Tabs/tabCercanos.dart';
+
 import 'package:autos/View/Cliente/Tabs/tabTodos.dart';
 import 'package:autos/View/Drawer.dart';
 
@@ -22,7 +22,7 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 2, vsync: this);
   }
 
   @override
@@ -43,7 +43,6 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
             controller: _tabController,
             tabs:  [
               Tab(text: 'Todos'),
-              Tab(text: 'Cercanos'),
               Tab(text: 'Buscar'),
             ],
             labelStyle:  TextStyle(fontSize: 14),
@@ -54,7 +53,6 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
         controller: _tabController,
         children: [
           TodosTab(),
-          CercanosTab(),
           BuscarTab(),
         ],
       ),

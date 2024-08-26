@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:typed_data';
 import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
+import 'package:autos/View/Proveedor/caracteristicas.dart';
 import 'package:flutter/material.dart';
 import 'package:image_picker/image_picker.dart';
 
@@ -25,6 +26,7 @@ class _EditarAutoState extends State<EditarAuto> {
   TextEditingController precioController = TextEditingController();
   TextEditingController ciudadController = TextEditingController();
   TextEditingController provinciaController = TextEditingController();
+    List<String> _selectedFeatures = [];
 
   @override
   void initState() {
@@ -135,14 +137,12 @@ class _EditarAutoState extends State<EditarAuto> {
                 },
               ),
               const SizedBox(height: 10),
-              TextFormField(
-                controller: caracteristicaController,
-                decoration: const InputDecoration(labelText: 'Características'),
-                validator: (value) {
-                  if (value == null || value.isEmpty) {
-                    return 'Por favor ingrese las características';
-                  }
-                  return null;
+              CaracteristicasSelector(
+                selectedFeatures: _selectedFeatures,
+                onChanged: (features) {
+                  setState(() {
+                    _selectedFeatures = features;
+                  });
                 },
               ),
               const SizedBox(height: 10),
@@ -213,6 +213,41 @@ class _EditarAutoState extends State<EditarAuto> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class CaracteristicasSelector extends StatelessWidget {
+  final List<String> selectedFeatures;
+  final Function(List<String>) onChanged;
+
+  CaracteristicasSelector({required this.selectedFeatures, required this.onChanged});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text('Características', style: TextStyle(fontWeight: FontWeight.bold)),
+        Wrap(
+          spacing: 10.0,
+          children: caracteristicas.map((caracteristica) {
+            bool isSelected = selectedFeatures.contains(caracteristica.nombre);
+            return ChoiceChip(
+              avatar: Icon(caracteristica.icon),
+              label: Text(caracteristica.nombre),
+              selected: isSelected,
+              onSelected: (selected) {
+                if (selected) {
+                  onChanged([...selectedFeatures, caracteristica.nombre]);
+                } else {
+                  onChanged(selectedFeatures.where((feature) => feature != caracteristica.nombre).toList());
+                }
+              },
+            );
+          }).toList(),
+        ),
+      ],
     );
   }
 }

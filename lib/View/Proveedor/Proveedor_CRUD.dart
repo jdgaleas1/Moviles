@@ -17,6 +17,7 @@ class _ProveedorState extends State<Proveedor> {
   Future<void> _refreshAutos() async {
     setState(() {});
   }
+  
 
   @override
   Widget build(BuildContext context) {
@@ -113,6 +114,7 @@ class AutoDetailScreen extends StatelessWidget {
   final Auto auto;
 
   const AutoDetailScreen({required this.auto});
+  
 
   @override
   Widget build(BuildContext context) {
