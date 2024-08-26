@@ -1,6 +1,7 @@
 class LoginModel {
   final String nombre;
   final String apellido;
+  final String  email;
   final int telefono;
   final String user;
   final String password;
@@ -10,6 +11,7 @@ class LoginModel {
   LoginModel({
     required this.nombre,
     required this.apellido,
+    required this.email,
     required this.telefono,
     required this.user,
     required this.password,
@@ -21,6 +23,7 @@ class LoginModel {
     return LoginModel(
       nombre: data['nombre'] ?? '',
       apellido: data['apellido'] ?? '',
+      email: data['email'] ?? '',
       telefono: data['telefono'] ?? 0,
       user: data['user'] ?? '',
       password: data['contra'] ?? '',
