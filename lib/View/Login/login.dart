@@ -26,78 +26,105 @@ class _LoginPageState extends State<LoginPage> {
       FirebaseAuth.instance; // Instancia de Firebase Auth
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  void _login() async {
-    // Restablecer los booleanos antes de la autenticación
-    esCliente = false;
-    esProveedor = false;
+void _login() async {
+  // Restablecer los booleanos antes de la autenticación
+  esCliente = false;
+  esProveedor = false;
 
-    try {
-      // Buscar el usuario por nombre de usuario en Firestore
-      QuerySnapshot userQuery = await _firestore
-          .collection('usuarios')
-          .where('user', isEqualTo: _usuarioController.text)
-          .limit(1)
-          .get();
+  try {
+    // Buscar el usuario por nombre de usuario en Firestore
+    QuerySnapshot userQuery = await _firestore
+        .collection('usuarios')
+        .where('user', isEqualTo: _usuarioController.text)
+        .limit(1)
+        .get();
 
-      if (userQuery.docs.isEmpty) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Usuario no encontrado')),
-        );
-        return;
-      }
-
-      String email = userQuery.docs.first['email'];
-
-      // Autenticar el usuario con el correo electrónico obtenido
-      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
-        email: email,
-        password: _contrasenaController.text,
-      );
-
-      User? user = userCredential.user;
-
-      // Verificar si el usuario ha verificado su correo
-      if (user != null && user.emailVerified) {
-        LoginModel? userModel = await _loginService.login(
-          context,
-          _usuarioController.text,
-          _contrasenaController.text,
-        );
-
-        if (userModel != null) {
-          setState(() {
-            esCliente = userModel.esCliente;
-            esProveedor = userModel.esProveedor;
-          });
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-                builder: (context) => MyHomePage(title: 'Alquiler Autos')),
-          );
-        } else {
-          // Muestra un mensaje de error si no se pudo iniciar sesión
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(content: Text('Usuario o contraseña incorrectos')),
-          );
-        }
-      } else {
-        // Si el correo no ha sido verificado, muestra un mensaje
-        if (user != null && !user.emailVerified) {
-          await _auth.signOut();
-          ScaffoldMessenger.of(context).showSnackBar(
-            SnackBar(
-                content: Text(
-                    'Por favor, verifica tu correo electrónico antes de ingresar.')),
-          );
-        }
-      }
-    } catch (e) {
-      print('Error al iniciar sesión: $e');
+    if (userQuery.docs.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error al iniciar sesión.')),
+        SnackBar(content: Text('Usuario no encontrado')),
       );
+      return;
     }
+
+    String email = userQuery.docs.first['email'];
+
+    // Autenticar el usuario con el correo electrónico obtenido
+    UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+      email: email,
+      password: _contrasenaController.text,
+    );
+
+    User? user = userCredential.user;
+
+    // Verificar si el usuario ha verificado su correo
+    if (user != null && user.emailVerified) {
+      LoginModel? userModel = await _loginService.login(
+        context,
+        _usuarioController.text,
+        _contrasenaController.text,
+      );
+
+      if (userModel != null) {
+        setState(() {
+          esCliente = userModel.esCliente;
+          esProveedor = userModel.esProveedor;
+        });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => MyHomePage(title: 'Alquiler Autos')),
+        );
+      } else {
+        // Muestra un mensaje de error si no se pudo iniciar sesión
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Usuario o contraseña incorrectos')),
+        );
+      }
+    } else {
+      // Si el correo no ha sido verificado, muestra un mensaje
+      if (user != null && !user.emailVerified) {
+        await _auth.signOut();
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Por favor, verifica tu correo electrónico antes de ingresar.')),
+        );
+      }
+    }
+  } catch (e) {
+    String errorMessage = 'Error al iniciar sesión.';
+
+    if (e is FirebaseAuthException) {
+      switch (e.code) {
+        case 'invalid-email':
+          errorMessage = 'El correo electrónico proporcionado no es válido.';
+          break;
+        case 'user-disabled':
+          errorMessage = 'El usuario ha sido deshabilitado.';
+          break;
+        case 'user-not-found':
+          errorMessage = 'No se encontró un usuario con ese correo electrónico.';
+          break;
+        case 'wrong-password':
+          errorMessage = 'La contraseña proporcionada es incorrecta.';
+          break;
+        case 'network-request-failed':
+          errorMessage = 'Error de red. Por favor, verifica tu conexión.';
+          break;  
+        default:
+          errorMessage = 'Ocurrió un error inesperado: ${e.message}';
+          break;
+      }
+    } else {
+      errorMessage = 'Ocurrió un error: ${e.toString()}';
+    }
+
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text(errorMessage)),
+    );
   }
+}
+
 
   @override
   Widget build(BuildContext context) {
