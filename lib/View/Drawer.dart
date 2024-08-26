@@ -61,6 +61,12 @@ class CustomDrawer extends StatelessWidget {
                       fontSize: 12,
                     ),
               ),
+              Text(
+                'Correo: ${user?.email ?? ""}',
+                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                      fontSize: 12,
+                    ),
+              ),
               Padding(
                 padding: EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(

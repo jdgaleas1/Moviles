@@ -1,185 +1,141 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class CreateAccountPage extends StatefulWidget {
-   CreateAccountPage({super.key});
-
+class CreateAccount extends StatefulWidget {
   @override
-  _CreateAccountPageState createState() => _CreateAccountPageState();
+  _CreateAccountState createState() => _CreateAccountState();
 }
 
-class _CreateAccountPageState extends State<CreateAccountPage> {
+class _CreateAccountState extends State<CreateAccount> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-  final TextEditingController _confirmPasswordController =
-      TextEditingController();
-  bool _obscureText = true;
-  bool _confirmObscureText = true;
+  final TextEditingController _firstNameController = TextEditingController();
+  final TextEditingController _lastNameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
+  final TextEditingController _usernameController = TextEditingController();
+  bool _isClient = true;
+  bool _isProvider = false;
 
-  final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
-
-  void _createAccount() {
-    if (_formKey.currentState?.validate() ?? false) {
-      // Aquí puedes agregar la lógica para crear una cuenta
-      final email = _emailController.text;
-      final password = _passwordController.text;
-
-      // Muestra un mensaje de éxito (o maneja la creación de cuenta como necesites)
-      ScaffoldMessenger.of(context).showSnackBar(
-         SnackBar(content: Text('Cuenta creada con éxito')),
+  void _createUser() async {
+    try {
+      UserCredential userCredential =
+          await _auth.createUserWithEmailAndPassword(
+        email: _emailController.text,
+        password: _passwordController.text,
       );
 
-      // Navega a otra página o regresa al login
-      Navigator.pop(context);
+      User? user = userCredential.user;
+
+      if (user != null) {
+        if (!user.emailVerified) {
+          await user.sendEmailVerification();
+          ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+            content: Text(
+                'Se ha enviado un correo de verificación. Por favor revisa tu bandeja de entrada.'),
+          ));
+        }
+
+        // Convertir el número de teléfono a un entero, si es posible
+        int phoneNumber;
+        try {
+          phoneNumber = int.parse(_phoneController.text.replaceAll(
+              RegExp(r'\D'), '')); // Elimina caracteres no numéricos
+        } catch (e) {
+          phoneNumber = 0; // Manejo de errores si la conversión falla
+          print('Error al convertir el teléfono a número: $e');
+        }
+
+        // Guardar datos del usuario en Firestore
+        await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(user.uid)
+            .set({
+          'apellido': _lastNameController.text,
+          'contra': _passwordController.text,
+          'esCliente': _isClient,
+          'esProveedor': _isProvider,
+          'nombre': _firstNameController.text,
+          'telefono': phoneNumber,
+          'user': _usernameController.text, // Guardar nombre de usuario
+          'email': user.email ?? '',
+        });
+
+        // Esperar a que el usuario verifique su correo
+        await _auth.signOut();
+        _showEmailVerificationDialog(user);
+      }
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error al crear la cuenta.'),
+      ));
     }
+  }
+
+  void _showEmailVerificationDialog(User user) {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: Text('Verificar correo electrónico'),
+        content: Text(
+            'Por favor, verifica tu correo electrónico. Luego de verificarlo, por favor inicia sesión.'),
+        actions: <Widget>[
+          TextButton(
+            onPressed: () {
+              Navigator.of(context).pop();
+            },
+            child: Text('Ok'),
+          ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: Stack(
-        fit: StackFit.expand,
-        children: <Widget>[
-          Image.asset(
-            'assets/images/car_login.jpg', // Asegúrate de tener esta imagen en tu carpeta assets
-            fit: BoxFit.cover,
-          ),
-          Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: <Widget>[
-              Padding(
-                padding:  EdgeInsets.symmetric(horizontal: 40.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    children: <Widget>[
-                      TextFormField(
-                        controller: _emailController,
-                        decoration: InputDecoration(
-                          labelText: 'Email',
-                          prefixIcon: Icon(Icons.email, color: Colors.black),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.8),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa un email';
-                          }
-                          return null;
-                        },
-                      ),
-                       SizedBox(height: 20),
-                      TextFormField(
-                        controller: _passwordController,
-                        decoration: InputDecoration(
-                          labelText: 'Contraseña',
-                          prefixIcon: Icon(Icons.lock, color: Colors.black),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _obscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Colors.black,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _obscureText = !_obscureText;
-                              });
-                            },
-                          ),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.8),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        obscureText: _obscureText,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor ingresa una contraseña';
-                          }
-                          return null;
-                        },
-                      ),
-                       SizedBox(height: 20),
-                      TextFormField(
-                        controller: _confirmPasswordController,
-                        decoration: InputDecoration(
-                          labelText: 'Confirmar Contraseña',
-                          prefixIcon: Icon(Icons.lock, color: Colors.black),
-                          suffixIcon: IconButton(
-                            icon: Icon(
-                              _confirmObscureText
-                                  ? Icons.visibility
-                                  : Icons.visibility_off,
-                              color: Colors.black,
-                            ),
-                            onPressed: () {
-                              setState(() {
-                                _confirmObscureText = !_confirmObscureText;
-                              });
-                            },
-                          ),
-                          filled: true,
-                          fillColor: Colors.white.withOpacity(0.8),
-                          border: OutlineInputBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        obscureText: _confirmObscureText,
-                        validator: (value) {
-                          if (value == null || value.isEmpty) {
-                            return 'Por favor confirma tu contraseña';
-                          }
-                          if (value != _passwordController.text) {
-                            return 'Las contraseñas no coinciden';
-                          }
-                          return null;
-                        },
-                      ),
-                       SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: _createAccount,
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 39, 218, 147),
-                          padding:  EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        child:  Text(
-                          'Crear Cuenta',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                       SizedBox(height: 20),
-                      ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(context); // Regresa al login
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.blueAccent,
-                          padding:  EdgeInsets.symmetric(
-                              horizontal: 30, vertical: 15),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(30.0),
-                          ),
-                        ),
-                        child:  Text(
-                          'Volver al Login',
-                          style: TextStyle(color: Colors.white),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-            ],
-          ),
-        ],
+      appBar: AppBar(
+        title: Text('Crear Cuenta'),
+      ),
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
+        child: Column(
+          children: <Widget>[
+            TextField(
+              controller: _emailController,
+              decoration: InputDecoration(labelText: 'Correo electrónico'),
+            ),
+            TextField(
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Contraseña'),
+              obscureText: true,
+            ),
+            TextField(
+              controller: _firstNameController,
+              decoration: InputDecoration(labelText: 'Nombre'),
+            ),
+            TextField(
+              controller: _lastNameController,
+              decoration: InputDecoration(labelText: 'Apellido'),
+            ),
+            TextField(
+              controller: _phoneController,
+              decoration: InputDecoration(labelText: 'Teléfono'),
+              keyboardType: TextInputType.phone,
+            ),
+            TextField(
+              controller: _usernameController,
+              decoration: InputDecoration(labelText: 'Nombre de Usuario'),
+            ),
+            SizedBox(height: 20),
+            ElevatedButton(
+              onPressed: _createUser,
+              child: Text('Crear Cuenta'),
+            ),
+          ],
+        ),
       ),
     );
   }

@@ -4,6 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:autos/main.dart';
 import 'package:autos/View/Login/create_account.dart';
 import 'package:autos/View/Login/RecuperarContra.dart';
+import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 
 bool esCliente = false;
 bool esProveedor = false;
@@ -16,39 +18,83 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
-   final TextEditingController _usuarioController = TextEditingController();
+  final TextEditingController _usuarioController = TextEditingController();
   final TextEditingController _contrasenaController = TextEditingController();
   final LoginService _loginService = LoginService();
   bool _obscureText = true;
+  final FirebaseAuth _auth =
+      FirebaseAuth.instance; // Instancia de Firebase Auth
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   void _login() async {
     // Restablecer los booleanos antes de la autenticación
     esCliente = false;
     esProveedor = false;
 
-    // Autenticar el usuario
-    LoginModel? user = await _loginService.login(
-      context,
-      _usuarioController.text,
-      _contrasenaController.text,
-    );
+    try {
+      // Buscar el usuario por nombre de usuario en Firestore
+      QuerySnapshot userQuery = await _firestore
+          .collection('usuarios')
+          .where('user', isEqualTo: _usuarioController.text)
+          .limit(1)
+          .get();
 
-    if (user != null) {
-      setState(() {
-        esCliente = user.esCliente;
-        esProveedor = user.esProveedor;
-      });
-      print(
-          'Usuario logueado: esCliente = $esCliente, esProveedor = $esProveedor'); // Mensaje de depuración
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(
-            builder: (context) => MyHomePage(title: 'Alquiler Autos')),
+      if (userQuery.docs.isEmpty) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Usuario no encontrado')),
+        );
+        return;
+      }
+
+      String email = userQuery.docs.first['email'];
+
+      // Autenticar el usuario con el correo electrónico obtenido
+      UserCredential userCredential = await _auth.signInWithEmailAndPassword(
+        email: email,
+        password: _contrasenaController.text,
       );
-    } else {
-      // Muestra un mensaje de error
+
+      User? user = userCredential.user;
+
+      // Verificar si el usuario ha verificado su correo
+      if (user != null && user.emailVerified) {
+        LoginModel? userModel = await _loginService.login(
+          context,
+          _usuarioController.text,
+          _contrasenaController.text,
+        );
+
+        if (userModel != null) {
+          setState(() {
+            esCliente = userModel.esCliente;
+            esProveedor = userModel.esProveedor;
+          });
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+                builder: (context) => MyHomePage(title: 'Alquiler Autos')),
+          );
+        } else {
+          // Muestra un mensaje de error si no se pudo iniciar sesión
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Usuario o contraseña incorrectos')),
+          );
+        }
+      } else {
+        // Si el correo no ha sido verificado, muestra un mensaje
+        if (user != null && !user.emailVerified) {
+          await _auth.signOut();
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content: Text(
+                    'Por favor, verifica tu correo electrónico antes de ingresar.')),
+          );
+        }
+      }
+    } catch (e) {
+      print('Error al iniciar sesión: $e');
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Usuario o contraseña incorrectos')),
+        SnackBar(content: Text('Error al iniciar sesión.')),
       );
     }
   }
@@ -73,8 +119,8 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: _usuarioController,
                       decoration: InputDecoration(
-                        labelText: 'Usuario',
-                        prefixIcon: Icon(Icons.email, color: Colors.black),
+                        labelText: 'Nombre de Usuario',
+                        prefixIcon: Icon(Icons.person, color: Colors.black),
                         filled: true,
                         fillColor: Colors.white.withOpacity(0.8),
                         border: OutlineInputBorder(
@@ -86,11 +132,13 @@ class _LoginPageState extends State<LoginPage> {
                     TextField(
                       controller: _contrasenaController,
                       decoration: InputDecoration(
-                        labelText: 'Password',
+                        labelText: 'Contraseña',
                         prefixIcon: Icon(Icons.lock, color: Colors.black),
                         suffixIcon: IconButton(
                           icon: Icon(
-                            _obscureText ? Icons.visibility : Icons.visibility_off,
+                            _obscureText
+                                ? Icons.visibility
+                                : Icons.visibility_off,
                             color: Colors.black,
                           ),
                           onPressed: () {
@@ -113,13 +161,13 @@ class _LoginPageState extends State<LoginPage> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => RecuperarContrasena()),
+                              builder: (context) => RecuperarContra()),
                         );
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.blueAccent,
-                        padding: EdgeInsets.symmetric(
-                            horizontal: 30, vertical: 15),
+                        padding:
+                            EdgeInsets.symmetric(horizontal: 30, vertical: 15),
                         shape: RoundedRectangleBorder(
                           borderRadius: BorderRadius.circular(30.0),
                         ),
@@ -153,7 +201,7 @@ class _LoginPageState extends State<LoginPage> {
                             Navigator.push(
                               context,
                               MaterialPageRoute(
-                                  builder: (context) => CreateAccountPage()),
+                                  builder: (context) => CreateAccount()),
                             );
                           },
                           style: ElevatedButton.styleFrom(

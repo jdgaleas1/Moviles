@@ -1,167 +1,83 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 
-class RecuperarContrasena extends StatefulWidget {
-   RecuperarContrasena({super.key});
-
+class RecuperarContra extends StatefulWidget {
   @override
-  State<RecuperarContrasena> createState() => _RecuperarContrasenaState();
+  _RecuperarContraState createState() => _RecuperarContraState();
 }
 
-class _RecuperarContrasenaState extends State<RecuperarContrasena> with SingleTickerProviderStateMixin {
-  late TabController _tabController;
+class _RecuperarContraState extends State<RecuperarContra> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+  final TextEditingController _emailController = TextEditingController();
+  final TextEditingController _passwordController = TextEditingController();
 
-  @override
-  void initState() {
-    super.initState();
-    _tabController = TabController(length: 2, vsync: this);
+  void _resetPassword() async {
+    try {
+      await _auth.sendPasswordResetEmail(email: _emailController.text);
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content:
+            Text('Se ha enviado un correo para restablecer la contraseña.'),
+      ));
+    } catch (e) {
+      print('Error: $e');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text('Error al enviar el correo de recuperación.'),
+      ));
+    }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
+  void _updateFirestorePassword(String email, String newPassword) async {
+    try {
+      // Asumiendo que usas el correo electrónico como identificador
+      final userDoc = await _firestore
+          .collection('usuarios')
+          .where('email', isEqualTo: email)
+          .limit(1)
+          .get();
+
+      if (userDoc.docs.isNotEmpty) {
+        await _firestore
+            .collection('usuarios')
+            .doc(userDoc.docs.first.id)
+            .update({'contra': newPassword});
+        print('Contraseña actualizada en Firestore.');
+      } else {
+        print('No se encontró el usuario.');
+      }
+    } catch (e) {
+      print('Error al actualizar la contraseña en Firestore: $e');
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title:  Text('Recuperar Contraseña'),
-        centerTitle: true,
-        backgroundColor: Colors.white,
-        leading: IconButton(
-          icon:  Icon(Icons.close, color: Colors.black),
-          onPressed: () {
-            Navigator.of(context).pop();
-          },
-        ),
-        bottom: TabBar(
-          controller: _tabController,
-          tabs:  [
-            Tab(text: 'Verificación'),
-            Tab(text: 'Cambio de contraseña'),
-          ],
-          indicatorColor: Colors.black,
-          labelColor: Colors.black,
-          unselectedLabelColor: Colors.grey,
-        ),
+        title: Text('Recuperar Contraseña'),
       ),
-      body: TabBarView(
-        controller: _tabController,
-        children:  [
-          VerificacionTab(),
-          CambioContrasenaTab(),
-        ],
-      ),
-    );
-  }
-}
-
-class VerificacionTab extends StatelessWidget {
-   VerificacionTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:  EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
+      body: Padding(
+        padding: EdgeInsets.all(16.0),
         child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
+          children: <Widget>[
             TextField(
-              decoration: InputDecoration(
-                labelText: 'Ingresa tu correo de recuperación',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+              controller: _emailController,
+              decoration: InputDecoration(labelText: 'Correo electrónico'),
             ),
-             SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-              children: [
-                ElevatedButton(
-                  onPressed: () {},
-                  child:  Text('Enviar'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                  ),
-                ),
-                ElevatedButton(
-                  onPressed: () {},
-                  child:  Text('Regresar'),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.blue,
-                  ),
-                ),
-              ],
-            ),
-             SizedBox(height: 20),
-             Text(
-              'Ingresa el código que recibiste.',
-              style: TextStyle(color: Colors.grey),
-            ),
-             SizedBox(height: 10),
             TextField(
-              decoration: InputDecoration(
-                labelText: 'Código',
-                prefixIcon:  Icon(Icons.lock_outline),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-            ),
-             SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {},
-              child:  Text('Enviar codigo de recuperación'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-}
-
-class CambioContrasenaTab extends StatelessWidget {
-   CambioContrasenaTab({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Padding(
-      padding:  EdgeInsets.all(16.0),
-      child: SingleChildScrollView(
-        child: Column(
-          children: [
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Nueva contraseña',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
+              controller: _passwordController,
+              decoration: InputDecoration(labelText: 'Nueva Contraseña'),
               obscureText: true,
             ),
-             SizedBox(height: 20),
-            TextField(
-              decoration: InputDecoration(
-                labelText: 'Confirmar nueva contraseña',
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-              ),
-              obscureText: true,
-            ),
-             SizedBox(height: 20),
+            SizedBox(height: 20),
             ElevatedButton(
-              onPressed: () {},
-              child:  Text('Cambiar contraseña'),
-              style: ElevatedButton.styleFrom(
-                backgroundColor: Colors.blue,
-              ),
+              onPressed: () {
+                _resetPassword();
+                _updateFirestorePassword(
+                    _emailController.text, _passwordController.text);
+              },
+              child: Text('Recuperar Contraseña'),
             ),
           ],
         ),
