@@ -44,7 +44,7 @@ class NotificationHelper {
 
     overlay?.insert(overlayEntry);
 
-    Future.delayed(const Duration(seconds: 1), () {
+    Future.delayed(const Duration(seconds: 3), () {
       overlayEntry.remove();
     });
   }

@@ -36,7 +36,7 @@ class ReservaDetailSheet extends StatelessWidget {
                 children: [
                   Text(
                     'Detalles de la Reserva',
-                    style: Theme.of(context).textTheme.headline6,
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   IconButton(
                     icon: const Icon(Icons.close),
