@@ -1,4 +1,7 @@
+import 'package:flutter/material.dart';
+
 class LoginModel {
+  final String id_usuario;
   final String nombre;
   final String apellido;
   final String  email;
@@ -9,6 +12,7 @@ class LoginModel {
   final bool esProveedor;
 
   LoginModel({
+    required this.id_usuario,
     required this.nombre,
     required this.apellido,
     required this.email,
@@ -19,8 +23,9 @@ class LoginModel {
     required this.esProveedor,
   });
 
-  factory LoginModel.fromFirestore(Map<String, dynamic> data) {
+  factory LoginModel.fromFirestore(Map<String, dynamic> data, String documentId) {
     return LoginModel(
+      id_usuario: documentId, // Usa el ID del documento
       nombre: data['nombre'] ?? '',
       apellido: data['apellido'] ?? '',
       email: data['email'] ?? '',
@@ -31,4 +36,5 @@ class LoginModel {
       esProveedor: data['esProveedor'] ?? false,
     );
   }
+  
 }

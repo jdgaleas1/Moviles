@@ -25,17 +25,20 @@ class UserProvider extends ChangeNotifier {
   String? _nombre;
   String? _apellido;
   String? _telefono;
+  String? _idUsuario; 
 
   LoginModel? get user => _user;
   String? get nombre => _nombre;
   String? get apellido => _apellido;
   String? get telefono => _telefono;
+  String? get idUsuario => _idUsuario;
 
   void setUser(LoginModel user) {
     _user = user;
     _nombre = user.nombre; // Asumiendo que LoginModel tiene un campo 'nombres'
     _apellido = user.apellido; // Asumiendo que LoginModel tiene un campo 'apellidos'
     _telefono = user.telefono.toString(); // Asumiendo que LoginModel tiene un campo 'telefono' de tipo int
+    _idUsuario = user.id_usuario; // Asignar el ID del usuario
     notifyListeners();
   }
 
@@ -44,6 +47,7 @@ class UserProvider extends ChangeNotifier {
     _nombre = null;
     _apellido = null;
     _telefono = null;
+     _idUsuario = null;
     notifyListeners();
   }
 }

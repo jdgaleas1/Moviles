@@ -34,22 +34,13 @@ class _BuscarTabState extends State<BuscarTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+        appBar: AppBar(
+        title: Text('Encuentra!!!'),
+        centerTitle: true,
+      ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: TextField(
-              decoration: InputDecoration(
-                labelText: 'Buscar',
-                prefixIcon: const Icon(Icons.search, color: Colors.black),
-                filled: true,
-                fillColor: Colors.white.withOpacity(0.8),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(30.0),
-                ),
-              ),
-            ),
-          ),
+
           Expanded(
             child: FutureBuilder<List<Auto>>(
               future: _autosFuture,

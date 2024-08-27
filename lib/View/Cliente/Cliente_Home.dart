@@ -92,7 +92,7 @@ class _ClienteHomeState extends State<ClienteHome> with SingleTickerProviderStat
               child: FloatingActionButton(
                 heroTag: 'lupa',
                 onPressed: () {
-                  _tabController.animateTo(2);
+                  _tabController.animateTo(1);
                 },
                 child:  Icon(Icons.search),
                 tooltip: 'Buscar',

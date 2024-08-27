@@ -1,13 +1,17 @@
 import 'dart:convert';
-
 import 'package:autos/Model/AutoModel.dart';
+import 'package:autos/Model/alquilerModel.dart';
+import 'package:autos/Model/loginModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
+import 'package:autos/Servicios/alquilerService.dart';
 import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
 import 'package:autos/View/Cliente/Tabs/VistaDetallesAlquiler.dart';
 import 'package:autos/View/Cliente/Tabs/animacionFrontal.dart';
 import 'package:autos/View/Cliente/Tabs/vistaTraseraCarta.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart'; // Asegúrate de importar Provider
+import 'package:autos/Model/EstadosModel.dart'; // Asegúrate de importar el modelo necesario
 
 class TodosTab extends StatefulWidget {
   const TodosTab({super.key});
@@ -19,20 +23,65 @@ class TodosTab extends StatefulWidget {
 class _TodosTabState extends State<TodosTab> {
   late Future<List<Auto>> _autosFuture;
   Map<int, bool> _flippedCards = {};
+  final AlquilerService _alquilerService = AlquilerService(); // Instancia del servicio de alquiler
 
   @override
   void initState() {
     super.initState();
     _autosFuture = getAuto(); // Llama al servicio para obtener los autos
   }
-    void _toggleFlip(int index) {
+
+  void _toggleFlip(int index) {
     setState(() {
       _flippedCards[index] = !(_flippedCards[index] ?? false);
     });
   }
 
+  Future<void> _agregarReserva(Auto auto) async {
+    // Obtener el usuario actual desde el Provider
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? usuarioActualID = userProvider.idUsuario;
+
+    if (usuarioActualID == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se ha encontrado el usuario actual.')),
+      );
+      return;
+    }
+
+    // Buscar si ya existe una reserva para este auto y usuario
+    QuerySnapshot existingReservations = await FirebaseFirestore.instance
+        .collection('alquiler')
+        .where('autoID', isEqualTo: auto.id.toString())
+        .where('usuarioID', isEqualTo: usuarioActualID)
+        .get();
+
+    if (existingReservations.docs.isEmpty) {
+      // Si no existe una reserva, crea una nueva
+      Alquiler alquiler = Alquiler(
+        autoID: auto.id.toString(),
+        disponible: true,
+        estado: false,
+        usuarioID: usuarioActualID,
+      );
+
+      try {
+        await _alquilerService.agregarAlquiler(alquiler);
+        NotificationHelper.showAddedNotification(context);
+      } catch (e) {
+        print('Error al agregar la reserva: $e');
+      }
+    } else {
+      // Si ya existe una reserva, muestra un mensaje de error o notificación
+      print('Ya tienes una reserva para este auto.');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ya tienes una reserva para este auto.')),
+      );
+    }
+  }
+
   @override
-   Widget build(BuildContext context) {
+  Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder<List<Auto>>(
         future: _autosFuture,
@@ -70,8 +119,6 @@ class _TodosTabState extends State<TodosTab> {
       ),
     );
   }
-
-
 
   Widget buildFrontView(Auto auto) {
     return Card(
@@ -113,7 +160,7 @@ class _TodosTabState extends State<TodosTab> {
                       const SizedBox(width: 10),
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart),
-                          onPressed: () => NotificationHelper.showAddedNotification(context),
+                        onPressed: () => _agregarReserva(auto),
                         color: Colors.grey,
                       )
                     ],

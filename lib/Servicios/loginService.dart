@@ -2,7 +2,7 @@ import 'package:autos/Model/loginModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import 'package:autos/Model/EstadosModel.dart'; // Asegúrate de importar el modelo necesario
+import 'package:autos/Model/EstadosModel.dart';
 
 class LoginService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
@@ -16,11 +16,18 @@ class LoginService {
           .get();
 
       if (querySnapshot.docs.isNotEmpty) {
+        
         // Hay al menos un documento con el usuario proporcionado
         DocumentSnapshot doc = querySnapshot.docs.first;
-
-        LoginModel user = LoginModel.fromFirestore(doc.data() as Map<String, dynamic>);
-
+        
+        // Obtén el ID del documento
+        String documentId = doc.id;
+        
+        
+        // Actualiza el modelo con el ID del documento
+        LoginModel user = LoginModel.fromFirestore(doc.data() as Map<String, dynamic>, documentId);
+    print('Datos del documento: ${doc.data()}');
+print('ID del documento: $documentId');
         // Aquí deberías usar un método seguro para comparar contraseñas
         if (_verifyPassword(password, user.password)) {
           // Actualiza el UserProvider con los datos del usuario

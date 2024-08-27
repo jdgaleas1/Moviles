@@ -1,23 +1,81 @@
 import 'dart:convert';
 import 'package:autos/Model/AutoModel.dart';
+import 'package:autos/Model/EstadosModel.dart';
+import 'package:autos/Model/alquilerModel.dart';
+import 'package:autos/Servicios/alquilerService.dart';
 import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
+import 'package:autos/View/Cliente/Tabs/tabBuscar.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
+import 'package:provider/provider.dart';
 
 class DetallesAlquilerPage extends StatelessWidget {
   final Auto auto;
+  final AlquilerService _alquilerService = AlquilerService(); // Instancia del servicio de alquiler
 
   DetallesAlquilerPage({required this.auto});
+    Future<void> _agregarReserva(BuildContext context) async {
+    final userProvider = Provider.of<UserProvider>(context, listen: false);
+    String? usuarioActualID = userProvider.idUsuario;
+
+    if (usuarioActualID == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('No se pudo obtener la información del usuario.')),
+      );
+      return;
+    }
+
+    // Buscar si ya existe una reserva para este auto y usuario
+    QuerySnapshot existingReservations = await FirebaseFirestore.instance
+        .collection('alquiler')
+        .where('autoID', isEqualTo: auto.id.toString())
+        .where('usuarioID', isEqualTo: usuarioActualID)
+        .get();
+
+    if (existingReservations.docs.isEmpty) {
+      // Si no existe una reserva, crea una nueva
+      Alquiler alquiler = Alquiler(
+        autoID: auto.id.toString(),
+        disponible: true,
+        estado: false,
+        usuarioID: usuarioActualID,
+      );
+
+      try {
+        await _alquilerService.agregarAlquiler(alquiler);
+        NotificationHelper.showAddedNotification(context);
+      } catch (e) {
+        print('Error al agregar la reserva: $e');
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error al realizar la reserva.')),
+        );
+      }
+    } else {
+      // Si ya existe una reserva, muestra un mensaje de error o notificación
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Ya tienes una reserva para este auto.')),
+      );
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     final String message = 'Que te parece este cohe que esta en alquiler en Rental Card!';
-
-
     return Scaffold(
       appBar: AppBar(
         elevation: 0,
         actions: [
+          IconButton(
+            icon: const Icon(Icons.search),
+            onPressed: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => BuscarTab()),
+                            );
+            },
+          ),
+
           IconButton(
             icon: const Icon(Icons.ios_share),
             onPressed: () {
@@ -26,6 +84,7 @@ class DetallesAlquilerPage extends StatelessWidget {
               );
             },
           ),
+
         ],
       ),
       body: Column(
@@ -54,7 +113,7 @@ class DetallesAlquilerPage extends StatelessWidget {
                     SizedBox(height: 10),
                     _buildDetailItem(Icons.directions_car, 'Marca: ${auto.marca}'),
                     _buildDetailItem(Icons.confirmation_number, 'Placa: ${auto.placa}'),
-                    _buildDetailItem(Icons.location_city, 'Ubicación: ${auto.ciudad}, ${auto.provincia}'),
+                    _buildDetailItem(Icons.location_on, 'Ubicación: ${auto.ciudad}, ${auto.provincia}'),
                     _buildDetailItem(Icons.description, 'Descripción: ${auto.descripcion}'),
                     SizedBox(height: 20),
                     Text(
@@ -93,7 +152,7 @@ class DetallesAlquilerPage extends StatelessWidget {
                       backgroundColor: Colors.orange,
                       foregroundColor: Colors.white,
                     ),
-                    onPressed: () => NotificationHelper.showAddedNotification(context),
+                    onPressed: () => _agregarReserva(context),
                     child: Text('Alquilar Ahora'),
                   ),
                 ),

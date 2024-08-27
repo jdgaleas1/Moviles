@@ -138,6 +138,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
     return Scaffold(
       appBar: AppBar(
         title: Text('Mis Reservas'),
+        centerTitle: true,
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
