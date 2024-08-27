@@ -115,8 +115,7 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
                                     ),
                             const SizedBox(height: 10),
                             Text('Usuario: ${user.nombre} ${user.apellido}'),
-                            Text(
-                                'Teléfono: ${user.telefono}'), // Muestra el teléfono en la vista detallada
+                            Text('Teléfono: ${user.telefono}'), // Muestra el teléfono en la vista detallada
                             Text(
                                 'Fecha de Inicio: ${_formatDate(reserva.fechaIni)}'),
                             Text(
