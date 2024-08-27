@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
 import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
@@ -15,11 +17,18 @@ class BuscarTab extends StatefulWidget {
 
 class _BuscarTabState extends State<BuscarTab> {
   late Future<List<Auto>> _autosFuture;
+  Map<int, bool> _flippedCards = {};
 
   @override
   void initState() {
     super.initState();
     _autosFuture = getAuto(); // Llama al servicio para obtener los autos
+  }
+
+  void _toggleFlip(int index) {
+    setState(() {
+      _flippedCards[index] = !(_flippedCards[index] ?? false);
+    });
   }
 
   @override
@@ -46,11 +55,11 @@ class _BuscarTabState extends State<BuscarTab> {
               future: _autosFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 } else if (snapshot.hasError) {
                   return Center(child: Text('Error: ${snapshot.error}'));
                 } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-                  return Center(child: Text('No hay autos disponibles.'));
+                  return const Center(child: Text('No hay autos disponibles.'));
                 } else {
                   return GridView.builder(
                     padding: const EdgeInsets.all(7),
@@ -63,13 +72,13 @@ class _BuscarTabState extends State<BuscarTab> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       final auto = snapshot.data![index];
-                      final caracteristicas = auto.caracteristicas.split(', '); // Divide las características en una lista
+                      final caracteristicas = auto.caracteristicas.split(', ');
 
                       return AnimarTab(
-                        isFlipped: false,
-                        frontWidget: buildFrontView(index, auto),
-                        backWidget: buildBackView(caracteristicas), // Usa la función `buildBackView`
-                        onFlip: () => setState(() {}),
+                        isFlipped: _flippedCards[index] ?? false,
+                        frontWidget: buildFrontView(auto),
+                        backWidget: buildBackView(caracteristicas),
+                        onFlip: () => _toggleFlip(index),
                       );
                     },
                   );
@@ -82,7 +91,7 @@ class _BuscarTabState extends State<BuscarTab> {
     );
   }
 
-  Widget buildFrontView(int index, Auto auto) {
+  Widget buildFrontView(Auto auto) {
     return Card(
       clipBehavior: Clip.antiAlias,
       child: Column(
@@ -90,7 +99,9 @@ class _BuscarTabState extends State<BuscarTab> {
         children: [
           Expanded(
             flex: 3,
-            child: Image.asset('assets/images/car.png', fit: BoxFit.cover),
+            child: auto.imageBase64.isNotEmpty
+                ? Image.memory(base64Decode(auto.imageBase64), fit: BoxFit.cover)
+                : Image.asset('assets/images/car.png', fit: BoxFit.cover),
           ),
           Expanded(
             flex: 4,
@@ -100,13 +111,9 @@ class _BuscarTabState extends State<BuscarTab> {
                 mainAxisAlignment: MainAxisAlignment.spaceAround,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text('Nombre del carro ${auto.marca}',
-                      style: const TextStyle(
-                          fontWeight: FontWeight.bold, fontSize: 12)),
-                  Text('En terminal . ${auto.ciudad}, ${auto.provincia}',
-                      style: const TextStyle(fontSize: 10)),
-                  const Text('Política de combust.',
-                      style: TextStyle(fontSize: 10)),
+                  Text('Marca: ${auto.marca}', style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 12)),
+                  Text('Ubicación: ${auto.ciudad}, ${auto.provincia}', style: const TextStyle(fontSize: 6)),
+                  Text('${auto.precio.toStringAsFixed(2)} us', style: const TextStyle(fontSize: 10)),
                   Row(
                     children: [
                       Expanded(
@@ -114,20 +121,17 @@ class _BuscarTabState extends State<BuscarTab> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => DetallesAlquilerPage()),
+                              MaterialPageRoute(builder: (context) => DetallesAlquilerPage(auto: auto)),
                             );
                           },
-                          style: ElevatedButton.styleFrom(
-                              minimumSize: const Size(50, 25),
-                              backgroundColor: const Color.fromARGB(255, 1, 46, 65)),
-                          child: const Text('RESERVAR',
-                              style: TextStyle(fontSize: 5)),
+                          style: ElevatedButton.styleFrom(minimumSize: const Size(50, 25), backgroundColor: Color.fromARGB(255, 1, 46, 65)),
+                          child: const Text('RESERVAR', style: TextStyle(fontSize: 5)),
                         ),
                       ),
                       const SizedBox(width: 10),
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart),
-                        onPressed: () => NotificationHelper.showAddedNotification(context),
+                          onPressed: () => NotificationHelper.showAddedNotification(context),
                         color: Colors.grey,
                       )
                     ],

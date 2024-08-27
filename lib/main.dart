@@ -134,7 +134,6 @@ class _MyHomePageState extends State<MyHomePage> {
         onItemTapped: _onItemTapped,
         onLogout: () => _cerrarSesion(context),
         esCliente: esCliente,
-
       ),
     );
   }

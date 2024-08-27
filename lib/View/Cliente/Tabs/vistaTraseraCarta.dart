@@ -31,8 +31,8 @@ Widget buildBackView(List<String> caracteristicas) {
           return _buildFeatureCard(
             iconMap[caracteristica] ?? Icons.help_outline,
             caracteristica,
-            20,
-            10,
+            20,  // Tamaño del ícono
+            6,   // Tamaño del texto reducido
           );
         },
       ),
@@ -43,11 +43,7 @@ Widget buildBackView(List<String> caracteristicas) {
 Widget _buildFeatureCard(IconData icon, String text, double iconSize, double textSize) {
   return Container(
     padding: const EdgeInsets.all(2.0),
-    decoration: BoxDecoration(
-      color: Colors.white,
-      borderRadius: BorderRadius.circular(10),
-      boxShadow: [BoxShadow(color: Colors.grey.withOpacity(0.3), blurRadius: 4)],
-    ),
+
     child: Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[

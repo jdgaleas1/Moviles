@@ -103,7 +103,7 @@ class _TodosTabState extends State<TodosTab> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => DetallesAlquilerPage()),
+                              MaterialPageRoute(builder: (context) => DetallesAlquilerPage(auto: auto)),
                             );
                           },
                           style: ElevatedButton.styleFrom(minimumSize: const Size(50, 25), backgroundColor: Color.fromARGB(255, 1, 46, 65)),
@@ -113,7 +113,7 @@ class _TodosTabState extends State<TodosTab> {
                       const SizedBox(width: 10),
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart),
-                        onPressed: () {},
+                          onPressed: () => NotificationHelper.showAddedNotification(context),
                         color: Colors.grey,
                       )
                     ],

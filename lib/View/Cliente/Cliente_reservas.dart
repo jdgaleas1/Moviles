@@ -78,16 +78,8 @@ class _ClienteReservasState extends State<ClienteReservas> {
                 Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
                 Text('Duración: 3 días'), // Asumiendo una duración estática
                 Text('Auto: ${reserva.title}'),
-                SizedBox(height: 10),
-                Text('Estado: En espera'),
-                Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
-                Text('Duración: 3 días'), // Asumiendo una duración estática
-                Text('Auto: ${reserva.title}'),
-                SizedBox(height: 10),
-                Text('Estado: En espera'),
-                Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
-                Text('Duración: 3 días'), // Asumiendo una duración estática
-                Text('Auto: ${reserva.title}'),
+
+
               ],
             ),
           ),
