@@ -40,6 +40,24 @@ class _BuscarTabState extends State<BuscarTab> {
       ),
       body: Column(
         children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Ajusta el padding vertical
+            child: SizedBox(
+              height: 40.0, // Establece una altura fija más pequeña
+              child: TextField(
+                decoration: InputDecoration(
+                  labelText: 'Buscar',
+                  prefixIcon: const Icon(Icons.search, color: Colors.black),
+                  filled: true,
+                  fillColor: Colors.white.withOpacity(0.8),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(30.0),
+                  ),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0), // Ajusta el padding interno vertical del texto
+                ),
+              ),
+            ),
+          ),
 
           Expanded(
             child: FutureBuilder<List<Auto>>(

@@ -12,6 +12,7 @@ class _RecuperarContraState extends State<RecuperarContra> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
+   bool _obscureText = true;
 
   void _resetPassword() async {
     try {
@@ -64,13 +65,25 @@ class _RecuperarContraState extends State<RecuperarContra> {
             TextField(
               controller: _emailController,
               decoration: InputDecoration(labelText: 'Correo electrónico'),
-            ),
-            TextField(
+            ),            SizedBox(height: 16.0),
+            TextFormField(
               controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Nueva Contraseña'),
-              obscureText: true,
+              obscureText: _obscureText,
+              decoration: InputDecoration(
+                labelText: 'Nueva Contraseña',
+                suffixIcon: IconButton(
+                  icon: Icon(
+                    _obscureText ? Icons.visibility : Icons.visibility_off,
+                  ),
+                  onPressed: () {
+                    setState(() {
+                      _obscureText = !_obscureText;
+                    });
+                  },
+                ),
+              ),
             ),
-            SizedBox(height: 20),
+            SizedBox(height: 20.0),
             ElevatedButton(
               onPressed: () {
                 _resetPassword();

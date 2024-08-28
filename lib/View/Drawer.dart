@@ -1,5 +1,8 @@
 import 'package:autos/Model/EstadosModel.dart';
 import 'package:autos/Model/TemasModel.dart';
+import 'package:autos/View/Login/RecuperarContra.dart';
+import 'package:autos/View/SobreNosotros.dart';
+import 'package:autos/View/editarPerfil.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
@@ -17,7 +20,9 @@ class CustomDrawer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final user = Provider.of<UserProvider>(context).user;
+        final userProvider = Provider.of<UserProvider>(context);
+    final user = userProvider.user;
+
 
     return Drawer(
       child: ListView(
@@ -34,58 +39,20 @@ class CustomDrawer extends StatelessWidget {
             padding: EdgeInsets.zero,
             child: Container(),
           ),
-          SizedBox(height: 16),
+          const SizedBox(height: 16),
           Column(
             children: [
-              CircleAvatar(
+              const CircleAvatar(
                 backgroundImage: AssetImage('assets/images/avatar.png'),
                 radius: 40,
               ),
-              SizedBox(height: 10),
+                const SizedBox(height: 10),          
               Text(
-                '${user?.nombre ?? "Nombre"} ${user?.apellido ?? "Apellido"}',
+                '${user?.nombre ?? "Nombre"}${user?.apellido ?? "Apellido"}',
                 style: Theme.of(context).textTheme.bodyLarge!.copyWith(
                       fontSize: 18,
                       fontWeight: FontWeight.bold,
                     ),
-              ),
-              Text(
-                'Usuario: ${user?.user ?? ""}',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 12,
-                    ),
-              ),
-              Text(
-                'Telefono: 0${user?.telefono ?? ""}',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 12,
-                    ),
-              ),
-              Text(
-                'Correo: ${user?.email ?? ""}',
-                style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                      fontSize: 12,
-                    ),
-              ),
-              Padding(
-                padding: EdgeInsets.symmetric(horizontal: 16.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    Text(
-                      'Tipo de usuario: ',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontSize: 12,
-                          ),
-                    ),
-                    Text(
-                      esCliente ? 'Cliente' : 'Proveedor',
-                      style: Theme.of(context).textTheme.bodyMedium!.copyWith(
-                            fontSize: 12,
-                          ),
-                    ),
-                  ],
-                ),
               ),
             ],
           ),
@@ -99,12 +66,162 @@ class CustomDrawer extends StatelessWidget {
           ),
           ListTile(
             leading: Icon(Icons.car_rental_outlined),
-            title: Text('Reservas Hechas'),
+            title: const Text('Reservas Hechas'),
             onTap: () {
               onItemTapped(1);
               Navigator.pop(context);
             },
-          ),
+                  ),
+        ExpansionTile(
+          leading: Icon(Icons.badge),
+          title: Text('Perfil Datos'),
+          children: <Widget>[
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Usuario: ',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, // Negrita
+                          fontSize: 12,
+                        ),
+                  ),
+                  Text(
+                    '${user?.user ?? ""}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Nombres: ',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, // Negrita
+                          fontSize: 12,
+                        ),
+                  ),
+                  Text(
+                    '${user?.nombre ?? ""}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+                        Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Apellidos: ',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, // Negrita
+                          fontSize: 12,
+                        ),
+                  ),
+                  Text(
+                    '${user?.apellido ?? ""}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Telefono: ',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, // Negrita
+                          fontSize: 12,
+                        ),
+                  ),
+                  Text(
+                    '0${user?.telefono ?? ""}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Correo: ',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, // Negrita
+                          fontSize: 12,
+                        ),
+                  ),
+                  Text(
+                    '${user?.email ?? ""}',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 4.0),
+              child: Row(
+                children: [
+                  Text(
+                    'Tipo de usuario: ',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontWeight: FontWeight.bold, // Negrita
+                          fontSize: 12,
+                        ),
+                  ),
+                  Text(
+                    esCliente ? 'Cliente' : 'Proveedor',
+                    style: Theme.of(context).textTheme.bodyMedium!.copyWith(
+                          fontSize: 12,
+                        ),
+                  ),
+                ],
+              ),
+            ),
+            ListTile(
+              leading: Icon(Icons.edit_note),
+              title: Text('Editar Perfil'),
+              onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => EditProfilePage(user: user!)),
+                    );
+
+              },
+            ),
+            ListTile(
+              leading: Icon(Icons.password),
+              title: Text('Cambiar contraseña'),
+              onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => RecuperarContra()),
+                    );
+
+              },
+            ),
+          ],
+        ),
+
+
           ExpansionTile(
             leading: Icon(Icons.settings),
             title: Text('Configuración'),
@@ -165,6 +282,20 @@ class CustomDrawer extends StatelessWidget {
               ),
             ],
           ),
+          ListTile(
+            leading: Icon(Icons.help_outline),
+            title: Text('Información'),
+            onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(builder: (context) => InformativePage()),
+                    );
+            },
+          ),
+
+
+
+
           SizedBox(height: 20),
           Padding(
             padding: EdgeInsets.all(16.0),

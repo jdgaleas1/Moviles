@@ -1,11 +1,12 @@
 import 'package:autos/View/Proveedor/Reservas_Detalles.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/Model/Reserva.dart';
 import 'package:autos/Model/AutoModel.dart';
-import 'package:autos/Model/loginModel.dart'; // Asegúrate de importar el modelo de usuario
+import 'package:autos/Model/loginModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
 import 'package:autos/Servicios/Reservas_Service.dart';
-import 'package:autos/Servicios/LoginService.dart'; // Importa el servicio de login
+import 'package:autos/Servicios/LoginService.dart';
 import 'dart:convert';
 
 class ReservasView extends StatefulWidget {
@@ -31,12 +32,23 @@ class _ReservasViewState extends State<ReservasView> {
     });
   }
 
-  Future<Auto?> _fetchAutoById(int idaut) async {
-    return await getAutoById(idaut);
-  }
+  Future<Map<String, dynamic>> _fetchAutoAndUserById(String idAlquiler) async {
+    // Primero, obtén el documento de alquiler usando `id_alquiler`
+    DocumentSnapshot alquilerSnapshot = await FirebaseFirestore.instance.collection('alquiler').doc(idAlquiler).get();
 
-  Future<LoginModel?> _fetchUserById(String idusu) async {
-    return await LoginService().getUserById(idusu);
+    if (alquilerSnapshot.exists) {
+      String autoID = alquilerSnapshot['autoID'];
+      String usuarioID = alquilerSnapshot['usuarioID'];
+
+      // Ahora, usa esos IDs para obtener el auto y el usuario
+      Auto? auto = await getAutoById(int.parse(autoID));
+      LoginModel? user = await LoginService().getUserById(usuarioID);
+
+      return {'auto': auto, 'user': user};
+    } else {
+      // Si no existe el documento de alquiler, retorna null para ambos
+      return {'auto': null, 'user': null};
+    }
   }
 
   void _showDetails(Reserva reserva, Auto auto) {
@@ -77,81 +89,69 @@ class _ReservasViewState extends State<ReservasView> {
         itemCount: reservas.length,
         itemBuilder: (context, index) {
           Reserva reserva = reservas[index];
-          return FutureBuilder<Auto?>(
-            future: _fetchAutoById(reserva.idaut),
-            builder: (context, autoSnapshot) {
-              if (autoSnapshot.connectionState == ConnectionState.waiting) {
+
+          return FutureBuilder<Map<String, dynamic>>(
+            future: _fetchAutoAndUserById(reserva.id_alquiler),
+            builder: (context, snapshot) {
+              if (snapshot.connectionState == ConnectionState.waiting) {
                 return const Center(child: CircularProgressIndicator());
-              } else if (autoSnapshot.hasError) {
-                return const Center(child: Text('Error al cargar el auto'));
-              } else if (!autoSnapshot.hasData || autoSnapshot.data == null) {
-                return const Center(child: Text('Auto no disponible'));
+              } else if (snapshot.hasError) {
+                return const Center(child: Text('Error al cargar los datos'));
+              } else if (!snapshot.hasData || snapshot.data == null) {
+                return const Center(child: Text('Datos no disponibles'));
               }
 
-              Auto auto = autoSnapshot.data!;
+              Auto? auto = snapshot.data!['auto'];
+              LoginModel? user = snapshot.data!['user'];
 
-              return FutureBuilder<LoginModel?>(
-                future: _fetchUserById(reserva.idusu),
-                builder: (context, userSnapshot) {
-                  if (userSnapshot.connectionState == ConnectionState.waiting) {
-                    return const Center(child: CircularProgressIndicator());
-                  } else if (userSnapshot.hasError) {
-                    return const Center(
-                        child: Text('Error al cargar el usuario'));
-                  } else if (!userSnapshot.hasData ||
-                      userSnapshot.data == null) {
-                    return const Center(child: Text('Usuario no disponible'));
-                  }
+              if (auto == null || user == null) {
+                return const Center(child: Text('Datos no disponibles'));
+              }
 
-                  LoginModel user = userSnapshot.data!;
-
-                  return GestureDetector(
-                    onTap: () {
-                      _showDetails(reserva, auto);
-                    },
-                    child: Card(
-                      margin: const EdgeInsets.all(10),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Expanded(
-                            child: auto.imageBase64.isNotEmpty
-                                ? Image.memory(
-                                    base64Decode(auto.imageBase64),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    'assets/images/buggati.jpg',
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Auto: ${auto.marca}',
-                              style:
-                                  const TextStyle(fontWeight: FontWeight.bold),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Reservado por: ${user.nombre} ${user.apellido}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ),
-                          Padding(
-                            padding: const EdgeInsets.all(8.0),
-                            child: Text(
-                              'Duración: ${_getFormattedDuration(reserva.fechaIni, reserva.fechaFin)}',
-                              style: const TextStyle(fontSize: 12),
-                            ),
-                          ),
-                        ],
-                      ),
-                    ),
-                  );
+              return GestureDetector(
+                onTap: () {
+                  _showDetails(reserva, auto);
                 },
+                child: Card(
+                  margin: const EdgeInsets.all(10),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Expanded(
+                        child: auto.imageBase64.isNotEmpty
+                            ? Image.memory(
+                                base64Decode(auto.imageBase64),
+                                fit: BoxFit.cover,
+                              )
+                            : Image.asset(
+                                'assets/images/buggati.jpg',
+                                fit: BoxFit.cover,
+                              ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Auto: ${auto.marca}',
+                          style: const TextStyle(fontWeight: FontWeight.bold),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Reservado por: ${user.nombre} ${user.apellido}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: Text(
+                          'Duración: ${_getFormattedDuration(reserva.fechaIni, reserva.fechaFin)}',
+                          style: const TextStyle(fontSize: 12),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
               );
             },
           );

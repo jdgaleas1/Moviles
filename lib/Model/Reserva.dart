@@ -4,24 +4,21 @@ class Reserva {
   int id; 
   DateTime fechaIni; 
   DateTime fechaFin; 
-  int idaut; 
-  String idusu;
+  String id_alquiler;
 
   Reserva({
     required this.id,
     required this.fechaIni,
     required this.fechaFin,
-    required this.idaut,
-    required this.idusu,
+    required this.id_alquiler,
   });
 
   factory Reserva.fromFirestore(Map<String, dynamic> data) {
     return Reserva(
-      id: (data['id'] as num).toInt(), 
-      fechaIni: (data['fecha_ini'] as Timestamp).toDate(), 
-      fechaFin: (data['fecha_fin'] as Timestamp).toDate(), 
-      idaut: (data['idaut'] as num).toInt(),
-      idusu: data['idusu'] as String,
+      id: (data['id'] as num).toInt(),
+      fechaIni: (data['fecha_ini'] != null) ? (data['fecha_ini'] as Timestamp).toDate() : DateTime.now(), // Maneja caso nulo
+      fechaFin: (data['fecha_fin'] != null) ? (data['fecha_fin'] as Timestamp).toDate() : DateTime.now(), // Maneja caso nulo
+      id_alquiler: data['id_alquiler'] ?? '',
     );
   }
 
@@ -30,8 +27,7 @@ class Reserva {
       'id': id,
       'fecha_ini': fechaIni,
       'fecha_fin': fechaFin,
-      'idaut': idaut,
-      'idusu': idusu,
+      'id_alquiler': id_alquiler,
     };
   }
 }

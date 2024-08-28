@@ -36,6 +36,7 @@ class DetallesAlquilerPage extends StatelessWidget {
     if (existingReservations.docs.isEmpty) {
       // Si no existe una reserva, crea una nueva
       Alquiler alquiler = Alquiler(
+        id_alquiler: '', 
         autoID: auto.id.toString(),
         disponible: true,
         estado: false,

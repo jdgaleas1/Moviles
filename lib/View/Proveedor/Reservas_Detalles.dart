@@ -1,8 +1,10 @@
+import 'package:autos/Servicios/Auto_Service.dart';
 import 'package:flutter/material.dart';
 import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Model/Reserva.dart';
 import 'package:autos/Model/loginModel.dart';
-import 'package:autos/Servicios/LoginService.dart'; // Asegúrate de importar el servicio de login
+import 'package:autos/Servicios/LoginService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart'; // Importa Firestore para manejar las consultas
 
 class ReservaDetailSheet extends StatelessWidget {
   final Auto auto;
@@ -10,21 +12,46 @@ class ReservaDetailSheet extends StatelessWidget {
 
   const ReservaDetailSheet({Key? key, required this.auto, required this.reserva}) : super(key: key);
 
+  Future<Map<String, dynamic>> _fetchAutoAndUserById(String idAlquiler) async {
+    // Primero, obtén el documento de alquiler usando `id_alquiler`
+    DocumentSnapshot alquilerSnapshot = await FirebaseFirestore.instance.collection('alquiler').doc(idAlquiler).get();
+
+    if (alquilerSnapshot.exists) {
+      String autoID = alquilerSnapshot['autoID'];
+      String usuarioID = alquilerSnapshot['usuarioID'];
+
+      // Ahora, usa esos IDs para obtener el auto y el usuario
+      Auto? auto = await getAutoById(int.parse(autoID));
+      LoginModel? user = await LoginService().getUserById(usuarioID);
+
+      return {'auto': auto, 'user': user};
+    } else {
+      // Si no existe el documento de alquiler, retorna null para ambos
+      return {'auto': null, 'user': null};
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<LoginModel?>(
-      future: LoginService().getUserById(reserva.idusu), // Obtén la información del usuario por ID
+    return FutureBuilder<Map<String, dynamic>>(
+      future: _fetchAutoAndUserById(reserva.id_alquiler), // Usa el ID del alquiler para obtener auto y usuario
       builder: (context, snapshot) {
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator()); // Muestra un indicador de carga mientras se obtienen los datos
         } else if (snapshot.hasError) {
-          return const Center(child: Text('Error al cargar los datos del usuario')); // Muestra un mensaje de error
+          return const Center(child: Text('Error al cargar los datos del alquiler')); // Muestra un mensaje de error
         } else if (!snapshot.hasData || snapshot.data == null) {
-          return const Center(child: Text('Usuario no encontrado')); // Muestra un mensaje si no se encuentra el usuario
+          return const Center(child: Text('Alquiler no encontrado')); // Muestra un mensaje si no se encuentra el alquiler
         }
 
-        // Una vez que los datos del usuario están disponibles, muestra los detalles
-        LoginModel user = snapshot.data!;
+        // Obtén el auto y el usuario de los datos cargados
+        Auto? auto = snapshot.data!['auto'];
+        LoginModel? user = snapshot.data!['user'];
+
+        if (auto == null || user == null) {
+          return const Center(child: Text('Datos no disponibles')); // Maneja el caso en que los datos no estén disponibles
+        }
+
         return Container(
           padding: const EdgeInsets.all(16.0),
           child: Column(

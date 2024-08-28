@@ -1,7 +1,6 @@
 import 'package:autos/Model/Reserva.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-
 Future<List<Reserva>> getReservas() async {
   List<Reserva> reservas = [];
 
@@ -48,8 +47,7 @@ Future<int> getNextReservaId() async {
   return nextId;
 }
 
-Future<void> guardarReserva(
-    DateTime fechaIni, DateTime fechaFin, int idaut, String idusu) async {
+Future<void> guardarReserva(DateTime fechaIni, DateTime fechaFin, String idAlquiler) async {
   int nuevoId = await getNextReservaId();
   print("llegó al guardar");
   try {
@@ -62,18 +60,16 @@ Future<void> guardarReserva(
       'id': nuevoId,
       'fecha_ini': fechaIni,
       'fecha_fin': fechaFin,
-      'idaut': idaut,
-      'idusu': idusu,
+      'id_alquiler': idAlquiler,
     });
 
-    print("Reserva guardada exitosamente con ID $nuevoId, Auto ID: $idaut, Usuario ID: $idusu");
+    print("Reserva guardada exitosamente con ID $nuevoId, Alquiler ID: $idAlquiler");
   } catch (e) {
     print('Error al guardar la reserva: $e');
   }
 }
 
-Future<void> editarReserva(int id, DateTime fechaIni, DateTime fechaFin,
-    int idaut, String idusu) async {
+Future<void> editarReserva(int id, DateTime fechaIni, DateTime fechaFin, String idAlquiler) async {
   print("llegó al guardar");
   try {
     print("llegó al try");
@@ -81,11 +77,10 @@ Future<void> editarReserva(int id, DateTime fechaIni, DateTime fechaFin,
     await FirebaseFirestore.instance.collection('reserva').doc(id.toString()).update({
       'fecha_ini': fechaIni,
       'fecha_fin': fechaFin,
-      'idaut': idaut,
-      'idusu': idusu,
+      'id_alquiler': idAlquiler,
     });
 
-    print("Reserva actualizada exitosamente con ID: $id, Auto ID: $idaut, Usuario ID: $idusu");
+    print("Reserva actualizada exitosamente con ID: $id, Alquiler ID: $idAlquiler");
   } catch (e) {
     print('Error al actualizar la reserva: $e');
   }

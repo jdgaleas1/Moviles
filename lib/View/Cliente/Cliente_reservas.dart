@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 
-final String Saludos = "Saludos! me interesa el coche - nombre: -----------";
+final String Saludos = "Saludos! me interesa alquilar el coche";
 final String message = 'Gracias';
 final double precio = 59.99; // Precio del alquiler por día
 final String phoneNumber = '593 96 224 0716'; // Número de WhatsApp en formato internacional (ejemplo: 1234567890)
