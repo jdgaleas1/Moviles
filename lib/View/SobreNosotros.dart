@@ -63,7 +63,7 @@ class InformativePage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Somos .',
+                    'Grupo 5 del curso Desarrollo Movil NRC:16829. \nIntegrantes:\n  -Joel Cuenca.\n  -Carlos Chasi.\n  -Johan Galeas.',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 14,
@@ -83,7 +83,7 @@ class InformativePage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Ofrecemos oportunidades para...',
+                    'Para acceder al sistema como alquilador contactenos.',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 14,
@@ -103,7 +103,7 @@ class InformativePage extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Puede comunicarse con nosotros a través de...',
+                    'Puede comunicarse con nosotros a través de correo:\n   -jdgaleas1@esp.edu.ec\n   -ajcuenca4@espe.edu.ec\n   -chasicarlos1a@gmail.com',
                     textAlign: TextAlign.left,
                     style: TextStyle(
                       fontSize: 14,
@@ -111,6 +111,15 @@ class InformativePage extends StatelessWidget {
                       height: 1.5,
                     ),
                   ),
+                              SizedBox(height: 10),
+            Container(
+              width: double.infinity,
+              child: Image.asset(
+                "assets/images/espe-carrera-de-software.png",
+                fit: BoxFit.cover,
+              ),
+            ),
+             SizedBox(height: 10),
                 ],
               ),
             ),

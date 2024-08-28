@@ -33,3 +33,25 @@ class Alquiler {
     );
   }
 }
+
+class DetalleAlquiler {
+  final String autoID;
+  final String marcaAuto;
+  final String placaAuto;
+  final String usuarioID;
+  final String nombreUsuario;
+  final String apellidoUsuario;
+  final String telefonoUsuario;
+
+
+  DetalleAlquiler({
+    required this.autoID,
+    required this.marcaAuto,
+    required this.placaAuto,
+    required this.usuarioID,
+    required this.nombreUsuario,
+    required this.apellidoUsuario,
+    required this.telefonoUsuario,
+  });
+}
+
