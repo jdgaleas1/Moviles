@@ -1,4 +1,5 @@
 import 'package:autos/Model/Reserva.dart';
+import 'package:autos/Model/AlquilerModel.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
 Future<List<Reserva>> getReservas() async {
@@ -6,7 +7,8 @@ Future<List<Reserva>> getReservas() async {
 
   try {
     // Obtiene la colección de reservas desde Firestore
-    QuerySnapshot snapshot = await FirebaseFirestore.instance.collection('reserva').get();
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('reserva').get();
 
     // Mapea los documentos a instancias de Reserva
     reservas = snapshot.docs.map((doc) {
@@ -17,6 +19,25 @@ Future<List<Reserva>> getReservas() async {
   }
 
   return reservas;
+}
+
+Future<List<Alquiler>> getAlquileres() async {
+  List<Alquiler> _alquileres = [];
+
+  try {
+    // Obtiene la colección de alquileres desde Firestore
+    QuerySnapshot snapshot =
+        await FirebaseFirestore.instance.collection('alquiler').get();
+
+    // Mapea los documentos a instancias de Alquiler
+    _alquileres = snapshot.docs.map((doc) {
+      return Alquiler.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+    }).toList();
+  } catch (e) {
+    print('Error al obtener los alquileres: $e');
+  }
+
+  return _alquileres;
 }
 
 Future<int> getNextReservaId() async {
@@ -47,7 +68,8 @@ Future<int> getNextReservaId() async {
   return nextId;
 }
 
-Future<void> guardarReserva(DateTime fechaIni, DateTime fechaFin, String idAlquiler) async {
+Future<void> guardarReserva(
+    DateTime fechaIni, DateTime fechaFin, String idAlquiler) async {
   int nuevoId = await getNextReservaId();
   print("llegó al guardar");
   try {
@@ -63,24 +85,30 @@ Future<void> guardarReserva(DateTime fechaIni, DateTime fechaFin, String idAlqui
       'id_alquiler': idAlquiler,
     });
 
-    print("Reserva guardada exitosamente con ID $nuevoId, Alquiler ID: $idAlquiler");
+    print(
+        "Reserva guardada exitosamente con ID $nuevoId, Alquiler ID: $idAlquiler");
   } catch (e) {
     print('Error al guardar la reserva: $e');
   }
 }
 
-Future<void> editarReserva(int id, DateTime fechaIni, DateTime fechaFin, String idAlquiler) async {
+Future<void> editarReserva(
+    int id, DateTime fechaIni, DateTime fechaFin, String idAlquiler) async {
   print("llegó al guardar");
   try {
     print("llegó al try");
     // Actualiza el documento en la colección 'reserva' con el ID especificado
-    await FirebaseFirestore.instance.collection('reserva').doc(id.toString()).update({
+    await FirebaseFirestore.instance
+        .collection('reserva')
+        .doc(id.toString())
+        .update({
       'fecha_ini': fechaIni,
       'fecha_fin': fechaFin,
       'id_alquiler': idAlquiler,
     });
 
-    print("Reserva actualizada exitosamente con ID: $id, Alquiler ID: $idAlquiler");
+    print(
+        "Reserva actualizada exitosamente con ID: $id, Alquiler ID: $idAlquiler");
   } catch (e) {
     print('Error al actualizar la reserva: $e');
   }
@@ -89,10 +117,34 @@ Future<void> editarReserva(int id, DateTime fechaIni, DateTime fechaFin, String 
 Future<void> eliminarReserva(int id) async {
   try {
     // Elimina el documento en la colección 'reserva' con el ID especificado
-    await FirebaseFirestore.instance.collection('reserva').doc(id.toString()).delete();
+    await FirebaseFirestore.instance
+        .collection('reserva')
+        .doc(id.toString())
+        .delete();
 
     print("Reserva eliminada exitosamente con ID: $id");
   } catch (e) {
     print('Error al eliminar la reserva: $e');
   }
+}
+
+final CollectionReference _alquilerCollection =
+    FirebaseFirestore.instance.collection('alquiler');
+Future<List<Alquiler>> getAlquileresConEstadoTrue() async {
+  List<Alquiler> _alquileres = [];
+
+  try {
+    // Realizar la consulta para obtener solo los alquileres con estado true
+    QuerySnapshot snapshot =
+        await _alquilerCollection.where('estado', isEqualTo: true).get();
+
+    // Convertir los documentos en instancias de Alquiler
+    _alquileres = snapshot.docs.map((doc) {
+      return Alquiler.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+    }).toList();
+  } catch (e) {
+    print('Error al obtener los alquileres con estado true: $e');
+  }
+
+  return _alquileres;
 }

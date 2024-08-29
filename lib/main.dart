@@ -74,7 +74,7 @@ class _MyHomePageState extends State<MyHomePage> {
     } else if (esProveedor) {
       _content = [
          Proveedor(),
-         VerSolicitudesReserva(),
+         VerSolicitudesAlquiler(),
       ];
     } else {
       _content = [
