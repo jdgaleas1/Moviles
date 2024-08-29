@@ -1,161 +1,189 @@
-import 'package:autos/View/Proveedor/Reservas_Detalles.dart';
-import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:autos/Servicios/Reservas_Service.dart';
 import 'package:flutter/material.dart';
-import 'package:autos/Model/Reserva.dart';
+import 'package:autos/Model/AlquilerModel.dart';
 import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Model/loginModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
-import 'package:autos/Servicios/Reservas_Service.dart';
+import 'package:autos/Servicios/alquilerService.dart';
 import 'package:autos/Servicios/LoginService.dart';
 import 'dart:convert';
 
-class ReservasView extends StatefulWidget {
-  const ReservasView({Key? key}) : super(key: key);
+class AlquileresView extends StatefulWidget {
+  const AlquileresView({Key? key}) : super(key: key);
 
   @override
-  _ReservasViewState createState() => _ReservasViewState();
+  _AlquileresViewState createState() => _AlquileresViewState();
 }
 
-class _ReservasViewState extends State<ReservasView> {
-  List<Reserva> reservas = [];
+class _AlquileresViewState extends State<AlquileresView> {
+  final AlquilerService _alquilerService = AlquilerService();
+  List<Alquiler> alquileres = [];
 
   @override
   void initState() {
     super.initState();
-    _fetchReservas();
+    _fetchAlquileres();
   }
 
-  Future<void> _fetchReservas() async {
-    List<Reserva> fetchedReservas = await getReservas();
+  Future<void> _fetchAlquileres() async {
+    List<Alquiler> fetchedAlquileres = await getAlquileresConEstadoTrue();
     setState(() {
-      reservas = fetchedReservas;
+      alquileres = fetchedAlquileres;
     });
   }
 
-  Future<Map<String, dynamic>> _fetchAutoAndUserById(String idAlquiler) async {
-    // Primero, obtén el documento de alquiler usando `id_alquiler`
-    DocumentSnapshot alquilerSnapshot = await FirebaseFirestore.instance.collection('alquiler').doc(idAlquiler).get();
-
-    if (alquilerSnapshot.exists) {
-      String autoID = alquilerSnapshot['autoID'];
-      String usuarioID = alquilerSnapshot['usuarioID'];
-
-      // Ahora, usa esos IDs para obtener el auto y el usuario
-      Auto? auto = await getAutoById(int.parse(autoID));
-      LoginModel? user = await LoginService().getUserById(usuarioID);
-
-      return {'auto': auto, 'user': user};
-    } else {
-      // Si no existe el documento de alquiler, retorna null para ambos
-      return {'auto': null, 'user': null};
-    }
+  Future<Auto?> _fetchAutoById(int idaut) async {
+    return await getAutoById(idaut);
   }
 
-  void _showDetails(Reserva reserva, Auto auto) {
+  Future<LoginModel?> _fetchUserById(String idusu) async {
+    return await LoginService().getUserById(idusu);
+  }
+
+  void _showDetails(Alquiler alquiler, Auto auto, LoginModel user) {
     showModalBottomSheet(
       context: context,
       builder: (context) {
-        return ReservaDetailSheet(auto: auto, reserva: reserva);
+        return AlquilerDetailSheet(auto: auto, user: user);
       },
     );
-  }
-
-  String _getFormattedDuration(DateTime fechaIni, DateTime fechaFin) {
-    Duration duration = fechaFin.difference(fechaIni);
-
-    if (duration.inDays >= 7) {
-      int weeks = duration.inDays ~/ 7;
-      return '$weeks ${weeks == 1 ? 'semana' : 'semanas'}';
-    } else if (duration.inDays >= 1) {
-      return '${duration.inDays} ${duration.inDays == 1 ? 'día' : 'días'}';
-    } else {
-      return '${duration.inHours} ${duration.inHours == 1 ? 'hora' : 'horas'}';
-    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Reservas Aprobadas'),
+        title: const Text('Alquileres Aprobados'),
       ),
-      body: GridView.builder(
-        gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10.0,
-          mainAxisSpacing: 10.0,
-          childAspectRatio: 0.75,
-        ),
-        itemCount: reservas.length,
-        itemBuilder: (context, index) {
-          Reserva reserva = reservas[index];
+      body: RefreshIndicator(
+        onRefresh: _fetchAlquileres, // Llama a la función que recarga los datos
+        child: GridView.builder(
+          gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 2,
+            crossAxisSpacing: 10.0,
+            mainAxisSpacing: 10.0,
+            childAspectRatio: 0.75,
+          ),
+          itemCount: alquileres.length,
+          itemBuilder: (context, index) {
+            Alquiler alquiler = alquileres[index];
+            return FutureBuilder<Auto?>(
+              future: _fetchAutoById(int.parse(alquiler.autoID)),
+              builder: (context, autoSnapshot) {
+                if (autoSnapshot.connectionState == ConnectionState.waiting) {
+                  return const Center(child: CircularProgressIndicator());
+                } else if (autoSnapshot.hasError) {
+                  return const Center(child: Text('Error al cargar el auto'));
+                } else if (!autoSnapshot.hasData || autoSnapshot.data == null) {
+                  return const Center(child: Text('Auto no disponible'));
+                }
 
-          return FutureBuilder<Map<String, dynamic>>(
-            future: _fetchAutoAndUserById(reserva.id_alquiler),
-            builder: (context, snapshot) {
-              if (snapshot.connectionState == ConnectionState.waiting) {
-                return const Center(child: CircularProgressIndicator());
-              } else if (snapshot.hasError) {
-                return const Center(child: Text('Error al cargar los datos'));
-              } else if (!snapshot.hasData || snapshot.data == null) {
-                return const Center(child: Text('Datos no disponibles'));
-              }
+                Auto auto = autoSnapshot.data!;
 
-              Auto? auto = snapshot.data!['auto'];
-              LoginModel? user = snapshot.data!['user'];
+                return FutureBuilder<LoginModel?>(
+                  future: _fetchUserById(alquiler.usuarioID),
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (userSnapshot.hasError) {
+                      return const Center(
+                          child: Text('Error al cargar el usuario'));
+                    } else if (!userSnapshot.hasData ||
+                        userSnapshot.data == null) {
+                      return const Center(child: Text('Usuario no disponible'));
+                    }
 
-              if (auto == null || user == null) {
-                return const Center(child: Text('Datos no disponibles'));
-              }
+                    LoginModel user = userSnapshot.data!;
 
-              return GestureDetector(
-                onTap: () {
-                  _showDetails(reserva, auto);
-                },
-                child: Card(
-                  margin: const EdgeInsets.all(10),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      Expanded(
-                        child: auto.imageBase64.isNotEmpty
-                            ? Image.memory(
-                                base64Decode(auto.imageBase64),
-                                fit: BoxFit.cover,
-                              )
-                            : Image.asset(
-                                'assets/images/buggati.jpg',
-                                fit: BoxFit.cover,
+                    return GestureDetector(
+                      onTap: () {
+                        _showDetails(alquiler, auto, user);
+                      },
+                      child: Card(
+                        margin: const EdgeInsets.all(10),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Expanded(
+                              child: auto.imageBase64.isNotEmpty
+                                  ? Image.memory(
+                                      base64Decode(auto.imageBase64),
+                                      fit: BoxFit.cover,
+                                    )
+                                  : Image.asset(
+                                      'assets/images/buggati.jpg',
+                                      fit: BoxFit.cover,
+                                    ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Auto: ${auto.marca}',
+                                style:
+                                    const TextStyle(fontWeight: FontWeight.bold),
                               ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Auto: ${auto.marca}',
-                          style: const TextStyle(fontWeight: FontWeight.bold),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8.0),
+                              child: Text(
+                                'Reservado por: ${user.nombre} ${user.apellido}',
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Reservado por: ${user.nombre} ${user.apellido}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.all(8.0),
-                        child: Text(
-                          'Duración: ${_getFormattedDuration(reserva.fechaIni, reserva.fechaFin)}',
-                          style: const TextStyle(fontSize: 12),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              );
-            },
-          );
-        },
+                    );
+                  },
+                );
+              },
+            );
+          },
+        ),
+      ),
+    );
+  }
+}
+
+class AlquilerDetailSheet extends StatelessWidget {
+  final Auto auto;
+  final LoginModel user;
+
+  const AlquilerDetailSheet({required this.auto, required this.user});
+
+  @override
+  Widget build(BuildContext context) {
+    return FractionallySizedBox(
+      widthFactor: 1.0, // Ocupa el 100% del ancho disponible
+      child: Container(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            const Text(
+              'Detalles del Auto',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text('Marca: ${auto.marca}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Placa: ${auto.placa}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Descripción: ${auto.descripcion}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Precio: \$${auto.precio}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 20),
+            const Text(
+              'Datos del Usuario',
+              style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+            ),
+            const SizedBox(height: 10),
+            Text('Nombre: ${user.nombre} ${user.apellido}', style: const TextStyle(fontSize: 16)),
+            const SizedBox(height: 5),
+            Text('Teléfono: ${user.telefono}', style: const TextStyle(fontSize: 16)),
+          ],
+        ),
       ),
     );
   }
