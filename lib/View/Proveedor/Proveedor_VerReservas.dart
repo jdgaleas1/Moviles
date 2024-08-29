@@ -225,7 +225,7 @@ class _VerSolicitudesAlquilerState extends State<VerSolicitudesAlquiler> {
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(builder: (context) => const VerSolicitudesAlquiler()), // Navega a la vista de reservas aprobadas
+            MaterialPageRoute(builder: (context) => const AlquileresView()), // Navega a la vista de reservas aprobadas
           );
         },
         child: const Icon(Icons.list_alt), // Ícono para el botón flotante
