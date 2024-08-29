@@ -1,10 +1,13 @@
+import 'package:autos/Servicios/alquilerService.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
+import 'package:autos/Model/alquilerModel.dart';
+import 'dart:convert'; // Import necesario para base64Decode
 
 final String Saludos = "Saludos! me interesa alquilar el coche";
 final String message = 'Gracias';
 final double precio = 59.99; // Precio del alquiler por día
-final String phoneNumber = '593 96 224 0716'; // Número de WhatsApp en formato internacional (ejemplo: 1234567890)
+final String phoneNumber = '593 96 224 0716'; // Número de WhatsApp en formato internacional
 
 class ClienteReservas extends StatefulWidget {
   ClienteReservas({super.key});
@@ -14,22 +17,8 @@ class ClienteReservas extends StatefulWidget {
 }
 
 class _ClienteReservasState extends State<ClienteReservas> {
-  List<Reserva> _reservas = [];
-
-  void loadReservas() async {
-    await Future.delayed(Duration(seconds: 1));
-    _reservas = [
-      Reserva(id: 1, title: "Carro 1"),
-      Reserva(id: 2, title: "Carro 2"),
-      Reserva(id: 3, title: "Carro 3"),
-      Reserva(id: 4, title: "Carro 4"),
-      Reserva(id: 5, title: "Carro 5"),
-    ];
-
-    if (mounted) {
-      setState(() {});
-    }
-  }
+  List<Alquiler> _reservas = [];
+  final AlquilerService _alquilerService = AlquilerService();
 
   @override
   void initState() {
@@ -37,13 +26,24 @@ class _ClienteReservasState extends State<ClienteReservas> {
     loadReservas();
   }
 
-  void cancelarReserva(int id) {
+  Future<void> loadReservas() async {
+    try {
+      _reservas = await _alquilerService.obtenerAlquileres();
+      if (mounted) {
+        setState(() {});
+      }
+    } catch (e) {
+      print('Error al cargar las reservas: $e');
+    }
+  }
+
+  void cancelarReserva(String id) {
     setState(() {
-      _reservas.removeWhere((reserva) => reserva.id == id);
+      _reservas.removeWhere((reserva) => reserva.id_alquiler == id);
     });
   }
 
-  void vistaModalReservasDetalles(Reserva reserva) {
+  void vistaModalReservasDetalles(Alquiler reserva) {
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -59,7 +59,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
               SizedBox(width: 8),
               Expanded(
                 child: Text(
-                  'Detalles Reserva ${reserva.id}',
+                  'Detalles Reserva ${reserva.id_alquiler}',
                   style: TextStyle(fontSize: 16),
                   overflow: TextOverflow.ellipsis,
                 ),
@@ -69,17 +69,15 @@ class _ClienteReservasState extends State<ClienteReservas> {
           content: SingleChildScrollView(
             child: ListBody(
               children: <Widget>[
-                Image.asset(
-                  'assets/images/car.png', // Asegúrate de tener esta imagen en tus assets
-                  fit: BoxFit.cover,
-                ),
+                // Mostrar la imagen del auto si está disponible en base64 o mostrar una imagen por defecto
+                reserva.imageBase64 != null && reserva.imageBase64!.isNotEmpty
+                    ? Image.memory(base64Decode(reserva.imageBase64!), fit: BoxFit.cover)
+                    : Image.asset('assets/images/car.png', fit: BoxFit.cover),
                 SizedBox(height: 10),
-                Text('Estado: En espera'),
-                Text('Fecha de Reserva: 2024-07-22'), // Asumiendo una fecha estática
-                Text('Duración: 3 días'), // Asumiendo una duración estática
-                Text('Auto: ${reserva.title}'),
-
-
+                Text('Estado: ${reserva.estado ? "Confirmado" : "En espera"}'),
+                Text('Auto ID: ${reserva.autoID}'),
+                Text('Usuario ID: ${reserva.usuarioID}'),
+                Text('Disponible: ${reserva.disponible ? "Sí" : "No"}'),
               ],
             ),
           ),
@@ -91,20 +89,20 @@ class _ClienteReservasState extends State<ClienteReservas> {
               child: Text(
                 'Contactar',
                 style: TextStyle(
-                  color: Colors.white, // Establece el color del texto aquí
+                  color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 1, 46, 65)),
             ),
             ElevatedButton(
               onPressed: () {
-                cancelarReserva(reserva.id);
+                cancelarReserva(reserva.id_alquiler);
                 Navigator.of(context).pop(); // Cerrar el diálogo
               },
               child: Text(
                 'Rechazar',
                 style: TextStyle(
-                  color: Colors.white, // Establece el color del texto aquí
+                  color: Colors.white,
                 ),
               ),
               style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
@@ -175,7 +173,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
                           Icon(Icons.calendar_today,
                               size: 40, color: Theme.of(context).primaryColor),
                           SizedBox(height: 10),
-                          Text(reserva.title,
+                          Text('Auto ID: ${reserva.autoID}',
                               style: TextStyle(fontSize: 18, color: Colors.black),
                               textAlign: TextAlign.center),
                         ],
@@ -187,13 +185,4 @@ class _ClienteReservasState extends State<ClienteReservas> {
       ),
     );
   }
-}
-
-class Reserva {
-  final int id;
-  final String title;
-
-  Reserva({required this.id, required this.title});
-
-  
 }

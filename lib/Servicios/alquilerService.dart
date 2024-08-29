@@ -52,4 +52,36 @@ class AlquilerService {
       throw Exception('Error al obtener los datos completos del alquiler: $e');
     }
   }
+
+Future<List<Alquiler>> obtenerAlquileres() async {
+  try {
+    QuerySnapshot snapshot = await _alquilerCollection.get();
+    List<Alquiler> alquileres = [];
+
+    for (QueryDocumentSnapshot doc in snapshot.docs) {
+      // Obtener el alquiler básico
+      Alquiler alquiler = Alquiler.fromMap(doc.data() as Map<String, dynamic>, doc.id);
+
+      // Obtener los datos completos del auto y usuario asociados
+      Map<String, dynamic> datosCompletos = await obtenerDatosCompletosAlquiler(alquiler.autoID, alquiler.usuarioID);
+
+      // Crear un nuevo objeto Alquiler con los datos completos
+      alquileres.add(Alquiler(
+        id_alquiler: alquiler.id_alquiler,
+        autoID: alquiler.autoID,
+        usuarioID: alquiler.usuarioID,
+        disponible: alquiler.disponible,
+        estado: alquiler.estado,
+        auto: Auto.fromFirestore(datosCompletos['auto']),
+        usuario: LoginModel.fromFirestore(datosCompletos['usuario'], alquiler.usuarioID),
+      ));
+    }
+
+    return alquileres;
+  } catch (e) {
+    print('Error al obtener los alquileres: $e');
+    throw Exception('Error al obtener los alquileres: $e');
+  }
+}
+
 }
