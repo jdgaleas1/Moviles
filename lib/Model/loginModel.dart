@@ -36,5 +36,17 @@ class LoginModel {
       esProveedor: data['esProveedor'] ?? false,
     );
   }
-  
+    Map<String, dynamic> toMap() {
+    return {
+      'id_usuario': id_usuario,
+      'nombre': nombre,
+      'apellido': apellido,
+      'email': email,
+      'telefono': telefono,
+      'user': user,
+      'password': password,
+      'esCliente': esCliente,
+      'esProveedor': esProveedor,
+    };
+  }
 }
