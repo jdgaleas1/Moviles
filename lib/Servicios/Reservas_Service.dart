@@ -3,11 +3,6 @@ import 'package:autos/Model/AlquilerModel.dart';
 import 'package:autos/View/Cliente/Cliente_reservas.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
- void getReservas() async {
-  List<Reserva> reservas = [];
-
-  
-}
 
 Future<List<Alquiler>> getAlquileres() async {
   List<Alquiler> _alquileres = [];
