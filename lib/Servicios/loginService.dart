@@ -9,6 +9,8 @@ class LoginService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
   Future<LoginModel?> login(BuildContext context, String email, String password) async {
+  Future<LoginModel?> login(
+      BuildContext context, String email, String password) async {
     try {
       QuerySnapshot querySnapshot = await _firestore
           .collection('usuarios')
@@ -28,6 +30,10 @@ class LoginService {
         LoginModel user = LoginModel.fromFirestore(doc.data() as Map<String, dynamic>, documentId);
     print('Datos del documento: ${doc.data()}');
 print('ID del documento: $documentId');
+        LoginModel user = LoginModel.fromFirestore(
+            doc.data() as Map<String, dynamic>, documentId);
+        print('Datos del documento: ${doc.data()}');
+        print('ID del documento: $documentId');
         // Aquí deberías usar un método seguro para comparar contraseñas
         if (_verifyPassword(password, user.password)) {
           Provider.of<UserProvider>(context, listen: false).setUser(user);
@@ -47,14 +53,20 @@ print('ID del documento: $documentId');
 
   bool _verifyPassword(String inputPassword, String storedPassword) {
     return inputPassword == storedPassword; // Implementar verificación de hash seguro
+    return inputPassword ==
+        storedPassword; // Implementar verificación de hash seguro
   }
 
   Future<LoginModel?> getUserById(String userId) async {
     try {
       DocumentSnapshot doc = await _firestore.collection('usuarios').doc(userId).get();
+      DocumentSnapshot doc =
+          await _firestore.collection('usuarios').doc(userId).get();
 
       if (doc.exists) {
         return LoginModel.fromFirestore(doc.data() as Map<String, dynamic>, userId);
+        return LoginModel.fromFirestore(
+            doc.data() as Map<String, dynamic>, userId);
       } else {
         print('Usuario no encontrado con ID: $userId');
         return null;
