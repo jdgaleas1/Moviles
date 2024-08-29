@@ -30,7 +30,6 @@ class _RecuperarContraState extends State<RecuperarContra> {
 
   void _updateFirestorePassword(String email, String newPassword) async {
     try {
-      // Asumiendo que usas el correo electrónico como identificador
       final userDoc = await _firestore
           .collection('usuarios')
           .where('email', isEqualTo: email)
@@ -57,30 +56,48 @@ class _RecuperarContraState extends State<RecuperarContra> {
       appBar: AppBar(
         title: Text('Recuperar Contraseña'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Correo electrónico'),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/car_login.jpg',
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Correo electrónico',
+                    filled:
+                        true, // Esto hace que el fondo del TextField sea opaco
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Nueva Contraseña',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _resetPassword();
+                    _updateFirestorePassword(
+                        _emailController.text, _passwordController.text);
+                  },
+                  child: Text('Recuperar Contraseña'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Nueva Contraseña'),
-              obscureText: true,
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: () {
-                _resetPassword();
-                _updateFirestorePassword(
-                    _emailController.text, _passwordController.text);
-              },
-              child: Text('Recuperar Contraseña'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
