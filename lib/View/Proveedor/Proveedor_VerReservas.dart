@@ -97,124 +97,133 @@ class _VerSolicitudesAlquilerState extends State<VerSolicitudesAlquiler> {
 
                 return GestureDetector(
                   onTap: () {
-                    showDialog(
-                      context: context,
-                      builder: (BuildContext context) {
-                        return AlertDialog(
-                          title: const Text('Detalles de la Solicitud'),
-                          content: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              if (auto.imageBase64.isNotEmpty)
-                                Image.memory(
-                                  base64Decode(auto.imageBase64),
-                                  fit: BoxFit.cover,
-                                )
-                              else
-                                Image.asset(
-                                  'assets/images/buggati.jpg', // Imagen por defecto
-                                  fit: BoxFit.cover,
-                                ),
-                              const SizedBox(height: 10),
-                              Text('Usuario: ${user.nombre} ${user.apellido}'),
-                              Text('Teléfono: ${user.telefono}'),
-                              Text('Auto: ${auto.marca}'),
-                            ],
-                          ),
-                          actions: [
-                            ElevatedButton(
-                              onPressed: () {
-                                _cambiarEstadoAlquiler(alquiler.id_alquiler, true); // Cambia el estado a true
-                                Navigator.of(context).pop(); // Cierra el diálogo
-                              },
-                              child: const Text('Aceptar', style: TextStyle(color: Colors.white)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                _cambiarEstadoAlquiler(alquiler.id_alquiler, false); // Cambia el estado a false
-                                Navigator.of(context).pop(); // Cierra el diálogo
-                              },
-                              child: const Text('Rechazar', style: TextStyle(color: Colors.white)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
-                            ),
-                            ElevatedButton(
-                              onPressed: () {
-                                Navigator.of(context).pop(); // Cierra el diálogo sin cambiar el estado
-                              },
-                              child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
-                              style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
-                            ),
-                          ],
-                        );
-                      },
-                    );
+showDialog(
+  context: context,
+  builder: (BuildContext context) {
+    return AlertDialog(
+      title: const Text('Detalles de la Solicitud'),
+      content: SingleChildScrollView( // Envuelve el contenido en un SingleChildScrollView
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            if (auto.imageBase64.isNotEmpty)
+              Image.memory(
+                base64Decode(auto.imageBase64),
+                fit: BoxFit.cover,
+                height: 120, // Puedes ajustar la altura según tus necesidades
+              )
+            else
+              Image.asset(
+                'assets/images/buggati.jpg', // Imagen por defecto
+                fit: BoxFit.cover,
+                height: 120, // Puedes ajustar la altura según tus necesidades
+              ),
+            const SizedBox(height: 10),
+            Text('Usuario: ${user.nombre} ${user.apellido}'),
+            Text('Teléfono: ${user.telefono}'),
+            Text('Auto: ${auto.marca}'),
+          ],
+        ),
+      ),
+      actions: [
+        ElevatedButton(
+          onPressed: () {
+            _cambiarEstadoAlquiler(alquiler.id_alquiler, true); // Cambia el estado a true
+            Navigator.of(context).pop(); // Cierra el diálogo
+          },
+          child: const Text('Aceptar', style: TextStyle(color: Colors.white)),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            _cambiarEstadoAlquiler(alquiler.id_alquiler, false); // Cambia el estado a false
+            Navigator.of(context).pop(); // Cierra el diálogo
+          },
+          child: const Text('Rechazar', style: TextStyle(color: Colors.white)),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            Navigator.of(context).pop(); // Cierra el diálogo sin cambiar el estado
+          },
+          child: const Text('Cancelar', style: TextStyle(color: Colors.white)),
+          style: ElevatedButton.styleFrom(backgroundColor: Colors.grey),
+        ),
+      ],
+    );
+  },
+);
+
                   },
-                  child: Card(
-                    shape: RoundedRectangleBorder(
-                      side: BorderSide(
-                        color: Colors.yellow.shade700,
-                        width: 1,
-                      ),
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    margin: const EdgeInsets.all(4),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10), // Bordes redondeados
-                          child: Container(
-                            height: 120, // Ajusta la altura según tus necesidades
-                            width: double.infinity, // Ocupa todo el ancho disponible
-                            child: auto.imageBase64.isNotEmpty
-                                ? Image.memory(
-                                    base64Decode(auto.imageBase64),
-                                    fit: BoxFit.cover,
-                                  )
-                                : Image.asset(
-                                    'assets/images/buggati.jpg', // Imagen por defecto
-                                    fit: BoxFit.cover,
-                                  ),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(2.0),
-                          child: Text(
-                            auto.marca,
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.all(1.0),
-                          child: Text(
-                            '${user.nombre} ${user.apellido}', // Nombre y apellido del usuario
-                            style: const TextStyle(fontSize: 12),
-                          ),
-                        ),
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceAround,
-                          children: [
-                            IconButton(
-                              icon: const Icon(Icons.check_circle),
-                              color: Colors.green,
-                              onPressed: () {
-                                _cambiarEstadoAlquiler(alquiler.id_alquiler, true); // Cambia el estado a true
-                              },
-                            ),
-                            IconButton(
-                              icon: const Icon(Icons.cancel),
-                              color: Colors.red,
-                              onPressed: () {
-                                _cambiarEstadoAlquiler(alquiler.id_alquiler, false); // Cambia el estado a false
-                              },
-                            ),
-                          ],
-                        ),
-                      ],
-                    ),
+                  child:
+                  Card(
+  shape: RoundedRectangleBorder(
+    side: BorderSide(
+      color: Colors.yellow.shade700,
+      width: 1,
+    ),
+    borderRadius: BorderRadius.circular(10),
+  ),
+  margin: const EdgeInsets.all(4),
+  child: SingleChildScrollView( // Agrega el scroll
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        ClipRRect(
+          borderRadius: BorderRadius.circular(10), // Bordes redondeados
+          child: Container(
+            height: 120, // Ajusta la altura según tus necesidades
+            width: double.infinity, // Ocupa todo el ancho disponible
+            child: auto.imageBase64.isNotEmpty
+                ? Image.memory(
+                    base64Decode(auto.imageBase64),
+                    fit: BoxFit.cover,
+                  )
+                : Image.asset(
+                    'assets/images/buggati.jpg', // Imagen por defecto
+                    fit: BoxFit.cover,
                   ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(2.0),
+          child: Text(
+            auto.marca,
+            style: const TextStyle(fontWeight: FontWeight.bold),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.all(1.0),
+          child: Text(
+            '${user.nombre} ${user.apellido}', // Nombre y apellido del usuario
+            style: const TextStyle(fontSize: 12),
+          ),
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.spaceAround,
+          children: [
+            IconButton(
+              icon: const Icon(Icons.check_circle),
+              color: Colors.green,
+              onPressed: () {
+                _cambiarEstadoAlquiler(alquiler.id_alquiler, true); // Cambia el estado a true
+              },
+            ),
+            IconButton(
+              icon: const Icon(Icons.cancel),
+              color: Colors.red,
+              onPressed: () {
+                _cambiarEstadoAlquiler(alquiler.id_alquiler, false); // Cambia el estado a false
+              },
+            ),
+          ],
+        ),
+      ],
+    ),
+  ),
+)
+
                 );
               },
             );
