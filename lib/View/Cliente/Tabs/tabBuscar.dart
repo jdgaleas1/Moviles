@@ -17,12 +17,55 @@ class BuscarTab extends StatefulWidget {
 
 class _BuscarTabState extends State<BuscarTab> {
   late Future<List<Auto>> _autosFuture;
+  List<Auto> _allAutos = []; // Lista de todos los autos
+  List<Auto> _filteredAutos = []; // Lista de autos filtrados
+  String _searchQuery = '';
+  String _selectedFilter = 'Marca'; // Filtro por defecto
+  bool _isAscending = true; // Controla el orden ascendente o descendente
   Map<int, bool> _flippedCards = {};
 
   @override
   void initState() {
     super.initState();
     _autosFuture = getAuto(); // Llama al servicio para obtener los autos
+    _autosFuture.then((autos) {
+      setState(() {
+        _allAutos = autos; // Almacena todos los autos
+        _filteredAutos = autos; // Inicialmente, muestra todos los autos
+        _sortAutos(); // Ordena los autos al inicio
+      });
+    });
+  }
+
+  void _filterAutos(String query) {
+    setState(() {
+      _searchQuery = query.toLowerCase();
+      _filteredAutos = _allAutos.where((auto) {
+        return auto.marca.toLowerCase().contains(_searchQuery) ||
+            auto.ciudad.toLowerCase().contains(_searchQuery) ||
+            auto.provincia.toLowerCase().contains(_searchQuery);
+      }).toList();
+      _sortAutos(); // Ordenar después de filtrar
+    });
+  }
+
+  void _sortAutos() {
+    setState(() {
+      _filteredAutos.sort((a, b) {
+        int comparison;
+        switch (_selectedFilter) {
+          case 'Marca':
+            comparison = a.marca.compareTo(b.marca);
+            break;
+          case 'Precio':
+            comparison = a.precio.compareTo(b.precio);
+            break;
+          default:
+            comparison = 0;
+        }
+        return _isAscending ? comparison : -comparison;
+      });
+    });
   }
 
   void _toggleFlip(int index) {

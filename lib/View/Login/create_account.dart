@@ -85,7 +85,7 @@ class _CreateAccountState extends State<CreateAccount> {
           TextButton(
             onPressed: () {
               //Navigator.of(context).pop();
-              Navigator.pop(context); 
+              Navigator.pop(context);
             },
             child: Text('Ok'),
           ),
@@ -100,43 +100,76 @@ class _CreateAccountState extends State<CreateAccount> {
       appBar: AppBar(
         title: Text('Crear Cuenta'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Correo electrónico'),
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/car_login.jpg',
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Correo electrónico',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Contraseña',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                  obscureText: true,
+                ),
+                TextField(
+                  controller: _firstNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nombre',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+                TextField(
+                  controller: _lastNameController,
+                  decoration: InputDecoration(
+                    labelText: 'Apellido',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+                TextField(
+                  controller: _phoneController,
+                  decoration: InputDecoration(
+                    labelText: 'Teléfono',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                  keyboardType: TextInputType.phone,
+                ),
+                TextField(
+                  controller: _usernameController,
+                  decoration: InputDecoration(
+                    labelText: 'Nombre de Usuario',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _createUser,
+                  child: Text('Crear Cuenta'),
+                ),
+              ],
             ),
-            TextField(
-              controller: _passwordController,
-              decoration: InputDecoration(labelText: 'Contraseña'),
-              obscureText: true,
-            ),
-            TextField(
-              controller: _firstNameController,
-              decoration: InputDecoration(labelText: 'Nombre'),
-            ),
-            TextField(
-              controller: _lastNameController,
-              decoration: InputDecoration(labelText: 'Apellido'),
-            ),
-            TextField(
-              controller: _phoneController,
-              decoration: InputDecoration(labelText: 'Teléfono'),
-              keyboardType: TextInputType.phone,
-            ),
-            TextField(
-              controller: _usernameController,
-              decoration: InputDecoration(labelText: 'Nombre de Usuario'),
-            ),
-            SizedBox(height: 20),
-            ElevatedButton(
-              onPressed: _createUser,
-              child: Text('Crear Cuenta'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

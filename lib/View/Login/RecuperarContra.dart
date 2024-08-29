@@ -31,7 +31,6 @@ class _RecuperarContraState extends State<RecuperarContra> {
 
   void _updateFirestorePassword(String email, String newPassword) async {
     try {
-      // Asumiendo que usas el correo electrónico como identificador
       final userDoc = await _firestore
           .collection('usuarios')
           .where('email', isEqualTo: email)

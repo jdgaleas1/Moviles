@@ -8,7 +8,7 @@ import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Model/loginModel.dart';
 import 'dart:convert';
 import 'Reservas_Aprobadas.dart';
-import 'package:intl/intl.dart';
+
 
 class VerSolicitudesReserva extends StatefulWidget {
   const VerSolicitudesReserva({super.key});
@@ -42,10 +42,7 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
     }
   }
 
-  String _formatDate(DateTime date) {
-    final DateFormat formatter = DateFormat('yyyy-MM-dd');
-    return formatter.format(date);
-  }
+
 
   Future<Map<String, dynamic>> _fetchAutoAndUserById(String idAlquiler) async {
     // Primero, obtén el documento de alquiler usando `id_alquiler`
@@ -127,8 +124,7 @@ class _VerSolicitudesReservaState extends State<VerSolicitudesReserva> {
                             const SizedBox(height: 10),
                             Text('Usuario: ${user.nombre} ${user.apellido}'),
                             Text('Teléfono: ${user.telefono}'),
-                            Text('Fecha de Inicio: ${_formatDate(reserva.fechaIni)}'),
-                            Text('Fecha Final: ${_formatDate(reserva.fechaFin)}'),
+
                             Text('Duración: $duration'),
                             Text('Auto: ${auto.marca}'),
                           ],
