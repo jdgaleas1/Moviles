@@ -1,13 +1,12 @@
-import 'package:autos/Model/AutoModel.dart';
-import 'package:autos/Model/loginModel.dart';
-import 'package:autos/Servicios/Auto_Service.dart';
-import 'package:autos/Servicios/loginService.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:autos/Model/alquilerModel.dart'; 
-
+import 'package:autos/Model/AutoModel.dart';
+import 'package:autos/Model/loginModel.dart';
 
 class AlquilerService {
   final CollectionReference _alquilerCollection = FirebaseFirestore.instance.collection('alquiler');
+  final CollectionReference _autoCollection = FirebaseFirestore.instance.collection('auto');
+  final CollectionReference _usuarioCollection = FirebaseFirestore.instance.collection('usuarios');
 
   Future<void> agregarAlquiler(Alquiler alquiler) async {
     try {
@@ -24,42 +23,33 @@ class AlquilerService {
       throw Exception('Error al agregar el alquiler: $e');
     }
   }
-}
 
-class DetalleAlquilerService {
-  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final LoginService _loginService = LoginService();
-
-
-  Future<DetalleAlquiler?> obtenerDetalleAlquiler(String autoID, String usuarioID) async {
+  Future<Map<String, dynamic>> obtenerDatosCompletosAlquiler(String autoID, String usuarioID) async {
     try {
-      // Obtener los datos del auto usando AutoService
-      Auto? auto = await getAutoById(int.parse(autoID));
-      if (auto == null) {
-        throw Exception('Auto no encontrado');
-      }
+      // Obtener los datos del auto
+      DocumentSnapshot autoSnapshot = await _autoCollection.doc(autoID).get();
+      Auto auto = Auto.fromFirestore(autoSnapshot.data() as Map<String, dynamic>);
 
-      // Obtener los datos del usuario usando LoginService
-      LoginModel? usuario = await _loginService.getUserById(usuarioID);
-      if (usuario == null) {
-        throw Exception('Usuario no encontrado');
-      }
+      // Imprimir los datos del auto para depuración
+      print("Datos del Auto:");
+      print(auto.toMap());
 
-      // Crear el objeto DetalleAlquiler con la información obtenida
-      DetalleAlquiler detalle = DetalleAlquiler(
-        autoID: autoID,
-        marcaAuto: auto.marca,
-        placaAuto: auto.placa,
-        usuarioID: usuarioID,
-        nombreUsuario: usuario.nombre,
-        apellidoUsuario: usuario.apellido,
-        telefonoUsuario: usuario.telefono.toString(),
-      );
+      // Obtener los datos del usuario
+      DocumentSnapshot usuarioSnapshot = await _usuarioCollection.doc(usuarioID).get();
+      LoginModel usuario = LoginModel.fromFirestore(usuarioSnapshot.data() as Map<String, dynamic>, usuarioSnapshot.id);
 
-      return detalle;
+      // Imprimir los datos del usuario para depuración
+      print("Datos del Usuario:");
+      print(usuario.toMap());
+
+      // Retornar un mapa con los datos completos del auto y el usuario
+      return {
+        'auto': auto.toMap(),
+        'usuario': usuario.toMap(),
+      };
     } catch (e) {
-      print('Error al obtener los detalles del alquiler: $e');
-      return null;
+      print('Error al obtener los datos completos del alquiler: $e');
+      throw Exception('Error al obtener los datos completos del alquiler: $e');
     }
   }
 }

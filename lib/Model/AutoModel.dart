@@ -35,4 +35,18 @@
         provincia: data['provincia'] ?? '',
       );
     }
+      // Método toMap para convertir la instancia de Auto a un mapa
+  Map<String, dynamic> toMap() {
+    return {
+      'id': id,
+      'marca': marca,
+      'placa': placa,
+      'descripcion': descripcion,
+      'caracteristicas': caracteristicas,
+      'precio': precio,
+      'imageBase64': imageBase64,
+      'ciudad': ciudad,
+      'provincia': provincia,
+    };
+  }
   }
