@@ -1,24 +1,12 @@
-import 'package:autos/Model/Reserva.dart';
+
 import 'package:autos/Model/AlquilerModel.dart';
+import 'package:autos/View/Cliente/Cliente_reservas.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-Future<List<Reserva>> getReservas() async {
+ void getReservas() async {
   List<Reserva> reservas = [];
 
-  try {
-    // Obtiene la colección de reservas desde Firestore
-    QuerySnapshot snapshot =
-        await FirebaseFirestore.instance.collection('reserva').get();
-
-    // Mapea los documentos a instancias de Reserva
-    reservas = snapshot.docs.map((doc) {
-      return Reserva.fromFirestore(doc.data() as Map<String, dynamic>);
-    }).toList();
-  } catch (e) {
-    print('Error al obtener las reservas: $e');
-  }
-
-  return reservas;
+  
 }
 
 Future<List<Alquiler>> getAlquileres() async {
