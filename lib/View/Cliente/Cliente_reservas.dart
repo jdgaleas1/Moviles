@@ -83,16 +83,22 @@ class _ClienteReservasState extends State<ClienteReservas> {
           ),
           actions: <Widget>[
             ElevatedButton(
-              onPressed: () {
-                _contactarPorWhatsApp();
-              },
+              onPressed: reserva.estado
+                  ? () {
+                      _contactarPorWhatsApp();
+                    }
+                  : null, // Si el estado es false, el botón estará deshabilitado
               child: Text(
                 'Contactar',
                 style: TextStyle(
                   color: Colors.white,
                 ),
               ),
-              style: ElevatedButton.styleFrom(backgroundColor: Color.fromARGB(255, 1, 46, 65)),
+              style: ElevatedButton.styleFrom(
+                backgroundColor: reserva.estado
+                    ? Color.fromARGB(255, 1, 46, 65)
+                    : Colors.grey, // Cambia el color si está deshabilitado
+              ),
             ),
             ElevatedButton(
               onPressed: () {
