@@ -107,7 +107,7 @@ class _CreateAccountState extends State<CreateAccount> {
             'assets/images/car_login.jpg',
             fit: BoxFit.cover,
           ),
-          Padding(
+          SingleChildScrollView(
             padding: EdgeInsets.all(16.0),
             child: Column(
               children: <Widget>[

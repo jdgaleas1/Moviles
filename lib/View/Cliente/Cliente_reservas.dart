@@ -122,7 +122,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
                     ? Image.memory(base64Decode(auto.imageBase64!), fit: BoxFit.cover)
                     : Image.asset('assets/images/car.png', fit: BoxFit.cover),
                 SizedBox(height: 10),
-                Text('Codigo identificador: \$${auto.id?? identificador}'), 
+                Text('Codigo identificador: ${auto.id?? identificador}'), 
                 Text('Estado: ${reserva.estado ? "Confirmado" : "En espera"}'),
                 Text('Auto: ${auto.marca?? marca}\nPlaca:${auto.placa ?? placa}'),
                 Text('Disponible: ${reserva.disponible ? "Sí" : "No"}'),
