@@ -12,7 +12,6 @@ class _RecuperarContraState extends State<RecuperarContra> {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final TextEditingController _emailController = TextEditingController();
   final TextEditingController _passwordController = TextEditingController();
-   bool _obscureText = true;
 
   void _resetPassword() async {
     try {
@@ -57,42 +56,48 @@ class _RecuperarContraState extends State<RecuperarContra> {
       appBar: AppBar(
         title: Text('Recuperar Contraseña'),
       ),
-      body: Padding(
-        padding: EdgeInsets.all(16.0),
-        child: Column(
-          children: <Widget>[
-            TextField(
-              controller: _emailController,
-              decoration: InputDecoration(labelText: 'Correo electrónico'),
-            ),            SizedBox(height: 16.0),
-            TextFormField(
-              controller: _passwordController,
-              obscureText: _obscureText,
-              decoration: InputDecoration(
-                labelText: 'Nueva Contraseña',
-                suffixIcon: IconButton(
-                  icon: Icon(
-                    _obscureText ? Icons.visibility : Icons.visibility_off,
+      body: Stack(
+        fit: StackFit.expand,
+        children: <Widget>[
+          Image.asset(
+            'assets/images/car_login.jpg',
+            fit: BoxFit.cover,
+          ),
+          Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Column(
+              children: <Widget>[
+                TextField(
+                  controller: _emailController,
+                  decoration: InputDecoration(
+                    labelText: 'Correo electrónico',
+                    filled:
+                        true, // Esto hace que el fondo del TextField sea opaco
+                    fillColor: Colors.white.withOpacity(0.8),
                   ),
-                  onPressed: () {
-                    setState(() {
-                      _obscureText = !_obscureText;
-                    });
-                  },
                 ),
-              ),
+                TextField(
+                  controller: _passwordController,
+                  decoration: InputDecoration(
+                    labelText: 'Nueva Contraseña',
+                    filled: true,
+                    fillColor: Colors.white.withOpacity(0.8),
+                  ),
+                  obscureText: true,
+                ),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: () {
+                    _resetPassword();
+                    _updateFirestorePassword(
+                        _emailController.text, _passwordController.text);
+                  },
+                  child: Text('Recuperar Contraseña'),
+                ),
+              ],
             ),
-            SizedBox(height: 20.0),
-            ElevatedButton(
-              onPressed: () {
-                _resetPassword();
-                _updateFirestorePassword(
-                    _emailController.text, _passwordController.text);
-              },
-              child: Text('Recuperar Contraseña'),
-            ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

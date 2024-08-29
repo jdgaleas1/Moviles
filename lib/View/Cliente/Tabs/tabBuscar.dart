@@ -1,12 +1,11 @@
 import 'dart:convert';
-
+import 'package:flutter/material.dart';
 import 'package:autos/Model/AutoModel.dart';
 import 'package:autos/Servicios/Auto_Service.dart';
 import 'package:autos/View/Cliente/Tabs/NotifiAgregado.dart';
 import 'package:autos/View/Cliente/Tabs/VistaDetallesAlquiler.dart';
 import 'package:autos/View/Cliente/Tabs/animacionFrontal.dart';
 import 'package:autos/View/Cliente/Tabs/vistaTraseraCarta.dart';
-import 'package:flutter/material.dart';
 
 class BuscarTab extends StatefulWidget {
   const BuscarTab({super.key});
@@ -17,22 +16,22 @@ class BuscarTab extends StatefulWidget {
 
 class _BuscarTabState extends State<BuscarTab> {
   late Future<List<Auto>> _autosFuture;
-  List<Auto> _allAutos = []; // Lista de todos los autos
-  List<Auto> _filteredAutos = []; // Lista de autos filtrados
+  List<Auto> _allAutos = [];
+  List<Auto> _filteredAutos = [];
   String _searchQuery = '';
-  String _selectedFilter = 'Marca'; // Filtro por defecto
-  bool _isAscending = true; // Controla el orden ascendente o descendente
+  String _selectedFilter = 'Marca';
+  bool _isAscending = true;
   Map<int, bool> _flippedCards = {};
 
   @override
   void initState() {
     super.initState();
-    _autosFuture = getAuto(); // Llama al servicio para obtener los autos
+    _autosFuture = getAuto();
     _autosFuture.then((autos) {
       setState(() {
-        _allAutos = autos; // Almacena todos los autos
-        _filteredAutos = autos; // Inicialmente, muestra todos los autos
-        _sortAutos(); // Ordena los autos al inicio
+        _allAutos = autos;
+        _filteredAutos = autos;
+        _sortAutos();
       });
     });
   }
@@ -45,7 +44,7 @@ class _BuscarTabState extends State<BuscarTab> {
             auto.ciudad.toLowerCase().contains(_searchQuery) ||
             auto.provincia.toLowerCase().contains(_searchQuery);
       }).toList();
-      _sortAutos(); // Ordenar después de filtrar
+      _sortAutos();
     });
   }
 
@@ -77,31 +76,68 @@ class _BuscarTabState extends State<BuscarTab> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-        title: Text('Encuentra!!!'),
+      appBar: AppBar(
+        title: const Text('Encuentra!!!'),
         centerTitle: true,
       ),
       body: Column(
         children: [
           Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0), // Ajusta el padding vertical
-            child: SizedBox(
-              height: 40.0, // Establece una altura fija más pequeña
-              child: TextField(
-                decoration: InputDecoration(
-                  labelText: 'Buscar',
-                  prefixIcon: const Icon(Icons.search, color: Colors.black),
-                  filled: true,
-                  fillColor: Colors.white.withOpacity(0.8),
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(30.0),
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              children: [
+                SizedBox(
+                  height: 40,
+                  child: TextField(
+                    onChanged: _filterAutos,
+                    decoration: InputDecoration(
+                      labelText: 'Buscar',
+                      prefixIcon: const Icon(Icons.search, color: Colors.black),
+                      filled: true,
+                      fillColor: Colors.white.withOpacity(0.8),
+                      border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(30.0),
+                      ),
+                    ),
                   ),
-                  contentPadding: const EdgeInsets.symmetric(vertical: 10.0), // Ajusta el padding interno vertical del texto
                 ),
-              ),
+                const SizedBox(height: 10),
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    DropdownButton<String>(
+                      value: _selectedFilter,
+                      items: const [
+                        DropdownMenuItem(
+                          value: 'Marca',
+                          child: Text('Marca'),
+                        ),
+                        DropdownMenuItem(
+                          value: 'Precio',
+                          child: Text('Precio'),
+                        ),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedFilter = value!;
+                          _sortAutos();
+                        });
+                      },
+                    ),
+                    IconButton(
+                      icon: Icon(_isAscending ? Icons.arrow_upward : Icons.arrow_downward),
+                      onPressed: () {
+                        setState(() {
+                          _isAscending = !_isAscending;
+                          _sortAutos();
+                        });
+                      },
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-
           Expanded(
             child: FutureBuilder<List<Auto>>(
               future: _autosFuture,
@@ -121,9 +157,9 @@ class _BuscarTabState extends State<BuscarTab> {
                       mainAxisSpacing: 5,
                       childAspectRatio: 0.7,
                     ),
-                    itemCount: snapshot.data!.length,
+                    itemCount: _filteredAutos.length,
                     itemBuilder: (context, index) {
-                      final auto = snapshot.data![index];
+                      final auto = _filteredAutos[index];
                       final caracteristicas = auto.caracteristicas.split(', ');
 
                       return AnimarTab(
@@ -176,16 +212,19 @@ class _BuscarTabState extends State<BuscarTab> {
                               MaterialPageRoute(builder: (context) => DetallesAlquilerPage(auto: auto)),
                             );
                           },
-                          style: ElevatedButton.styleFrom(minimumSize: const Size(50, 25), backgroundColor: Color.fromARGB(255, 1, 46, 65)),
+                          style: ElevatedButton.styleFrom(
+                            minimumSize: const Size(50, 25),
+                            backgroundColor: const Color.fromARGB(255, 1, 46, 65),
+                          ),
                           child: const Text('RESERVAR', style: TextStyle(fontSize: 5)),
                         ),
                       ),
                       const SizedBox(width: 10),
                       IconButton(
                         icon: const Icon(Icons.add_shopping_cart),
-                          onPressed: () => NotificationHelper.showAddedNotification(context),
+                        onPressed: () => NotificationHelper.showAddedNotification(context),
                         color: Colors.grey,
-                      )
+                      ),
                     ],
                   ),
                 ],
@@ -193,6 +232,19 @@ class _BuscarTabState extends State<BuscarTab> {
             ),
           ),
         ],
+      ),
+    );
+  }
+
+  Widget buildBackView(List<String> caracteristicas) {
+    return Container(
+      color: Colors.white,
+      child: ListView.builder(
+        padding: const EdgeInsets.all(8.0),
+        itemCount: caracteristicas.length,
+        itemBuilder: (context, index) {
+          return Text(caracteristicas[index]);
+        },
       ),
     );
   }

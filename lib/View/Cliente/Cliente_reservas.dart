@@ -1,13 +1,18 @@
+import 'package:autos/Model/AutoModel.dart';
+import 'package:autos/Model/loginModel.dart';
 import 'package:autos/Servicios/alquilerService.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_share_me/flutter_share_me.dart';
 import 'package:autos/Model/alquilerModel.dart';
 import 'dart:convert'; // Import necesario para base64Decode
 
 final String Saludos = "Saludos! me interesa alquilar el coche";
-final String message = 'Gracias';
 final double precio = 59.99; // Precio del alquiler por día
-final String phoneNumber = '593 96 224 0716'; // Número de WhatsApp en formato internacional
+final String phoneNumber = ''; // Número de WhatsApp en formato internacional
+final String marca = ''; // Número de WhatsApp en formato internacional
+final String placa = ''; // Número de WhatsApp en formato internacional
+final int identificador = 0; // Número de WhatsApp en formato internacional
 
 class ClienteReservas extends StatefulWidget {
   ClienteReservas({super.key});
@@ -17,7 +22,7 @@ class ClienteReservas extends StatefulWidget {
 }
 
 class _ClienteReservasState extends State<ClienteReservas> {
-  List<Alquiler> _reservas = [];
+  List<Map<String, dynamic>> _reservasConDatosCompletos = [];
   final AlquilerService _alquilerService = AlquilerService();
 
   @override
@@ -28,22 +33,65 @@ class _ClienteReservasState extends State<ClienteReservas> {
 
   Future<void> loadReservas() async {
     try {
-      _reservas = await _alquilerService.obtenerAlquileres();
-      if (mounted) {
-        setState(() {});
+      List<Alquiler> reservasCargadas = await _alquilerService.obtenerAlquileres();
+
+      // Crear una lista temporal que almacene los alquileres con los datos completos
+      List<Map<String, dynamic>> reservasConDatosCompletos = [];
+
+      for (var reserva in reservasCargadas) {
+        // Obtener datos del auto
+        var autoSnapshot = await FirebaseFirestore.instance
+            .collection('auto')
+            .doc(reserva.autoID)
+            .get();
+        var auto = Auto.fromFirestore(autoSnapshot.data() as Map<String, dynamic>);
+
+        // Obtener datos del usuario
+        var usuarioSnapshot = await FirebaseFirestore.instance
+            .collection('usuarios')
+            .doc(reserva.usuarioID)
+            .get();
+        var usuario = LoginModel.fromFirestore(
+            usuarioSnapshot.data() as Map<String, dynamic>, reserva.usuarioID);
+
+        // Crear un mapa que contenga la reserva, auto, y usuario
+        reservasConDatosCompletos.add({
+          'reserva': reserva,
+          'auto': auto,
+          'usuario': usuario,
+        });
       }
+
+      setState(() {
+        _reservasConDatosCompletos = reservasConDatosCompletos; // Nueva lista con datos completos
+      });
     } catch (e) {
       print('Error al cargar las reservas: $e');
     }
   }
 
-  void cancelarReserva(String id) {
-    setState(() {
-      _reservas.removeWhere((reserva) => reserva.id_alquiler == id);
-    });
+  void cancelarReserva(String id) async {
+    try {
+      // Llama al servicio para eliminar la reserva de la base de datos
+      await _alquilerService.eliminarAlquiler(id);
+      
+      // Remueve la reserva de la lista local
+      setState(() {
+        _reservasConDatosCompletos.removeWhere((reservaMap) => reservaMap['reserva'].id_alquiler == id);
+      });
+    } catch (e) {
+      print('Error al cancelar la reserva: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error al cancelar la reserva: $e')),
+      );
+    }
   }
 
-  void vistaModalReservasDetalles(Alquiler reserva) {
+  void vistaModalReservasDetalles(Map<String, dynamic> reservaMap) {
+    final Alquiler reserva = reservaMap['reserva'];
+    final Auto auto = reservaMap['auto'];
+    final LoginModel usuario = reservaMap['usuario']; // Cambia 'usuarios' por 'usuario'
+
     showDialog(
       context: context,
       builder: (BuildContext context) {
@@ -70,14 +118,16 @@ class _ClienteReservasState extends State<ClienteReservas> {
             child: ListBody(
               children: <Widget>[
                 // Mostrar la imagen del auto si está disponible en base64 o mostrar una imagen por defecto
-                reserva.imageBase64 != null && reserva.imageBase64!.isNotEmpty
-                    ? Image.memory(base64Decode(reserva.imageBase64!), fit: BoxFit.cover)
+                auto.imageBase64 != null && auto.imageBase64!.isNotEmpty
+                    ? Image.memory(base64Decode(auto.imageBase64!), fit: BoxFit.cover)
                     : Image.asset('assets/images/car.png', fit: BoxFit.cover),
                 SizedBox(height: 10),
+                Text('Codigo identificador: \$${auto.id?? identificador}'), 
                 Text('Estado: ${reserva.estado ? "Confirmado" : "En espera"}'),
-                Text('Auto ID: ${reserva.autoID}'),
-                Text('Usuario ID: ${reserva.usuarioID}'),
+                Text('Auto: ${auto.marca?? marca}\nPlaca:${auto.placa ?? placa}'),
                 Text('Disponible: ${reserva.disponible ? "Sí" : "No"}'),
+                Text('Precio por día: \$${auto.precio ?? precio}'), // Precio
+                Text('Proveedor: 0${usuario.telefono ?? phoneNumber}'), // Número del proveedor
               ],
             ),
           ),
@@ -85,7 +135,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
             ElevatedButton(
               onPressed: reserva.estado
                   ? () {
-                      _contactarPorWhatsApp();
+                      _contactarPorWhatsApp(usuario.telefono.toString(), auto.precio, auto.marca, auto.placa, auto.id);
                     }
                   : null, // Si el estado es false, el botón estará deshabilitado
               child: Text(
@@ -119,10 +169,10 @@ class _ClienteReservasState extends State<ClienteReservas> {
     );
   }
 
-  Future<void> _contactarPorWhatsApp() async {
+  Future<void> _contactarPorWhatsApp(String? telefono, double? precio, String? marca, String? placa, int id ) async {
     try {
       String? response = await FlutterShareMe().shareWhatsAppPersonalMessage(
-        message: '$message $Saludos Alquiler: \$$precio',
+        message: '$Saludos marca($marca) placa($placa) \$$precio con el identificador: $identificador' ,
         phoneNumber: phoneNumber,
       );
       if (response == 'success') {
@@ -137,6 +187,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
     }
   }
 
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -146,7 +197,7 @@ class _ClienteReservasState extends State<ClienteReservas> {
       ),
       body: Padding(
         padding: EdgeInsets.all(16.0),
-        child: _reservas.isEmpty
+        child: _reservasConDatosCompletos.isEmpty
             ? Center(child: CircularProgressIndicator())
             : GridView.builder(
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -154,11 +205,14 @@ class _ClienteReservasState extends State<ClienteReservas> {
                   crossAxisSpacing: 10.0,
                   mainAxisSpacing: 10.0,
                 ),
-                itemCount: _reservas.length,
+                itemCount: _reservasConDatosCompletos.length,
                 itemBuilder: (context, index) {
-                  final reserva = _reservas[index];
+                  final reservaMap = _reservasConDatosCompletos[index];
+                  final Alquiler reserva = reservaMap['reserva'];
+                  final Auto auto = reservaMap['auto'];
+
                   return GestureDetector(
-                    onTap: () => vistaModalReservasDetalles(reserva),
+                    onTap: () => vistaModalReservasDetalles(reservaMap),
                     child: Container(
                       padding: EdgeInsets.all(16),
                       decoration: BoxDecoration(
@@ -179,9 +233,9 @@ class _ClienteReservasState extends State<ClienteReservas> {
                           Icon(Icons.calendar_today,
                               size: 40, color: Theme.of(context).primaryColor),
                           SizedBox(height: 10),
-                          Text('Auto ID: ${reserva.autoID}',
-                              style: TextStyle(fontSize: 18, color: Colors.black),
-                              textAlign: TextAlign.center),
+                          Text('Auto: ${auto.marca}'),
+                          SizedBox(height: 10),
+                          Text('Precio: \$${auto.precio ?? precio}'),
                         ],
                       ),
                     ),
